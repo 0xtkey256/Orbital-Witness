@@ -33,24 +33,45 @@ def nosana():
 
 
 def daytona():
-    """サンドボックスを作り、許可ドメインは通り・それ以外は遮断されることを確かめる。"""
+    """サンドボックスを作り、データ取得先に届くかを確かめる。
+    RESTRICT_NETWORK=1 のときは、許可外のドメインが遮断されることも確かめる。"""
     from daytona import CreateSandboxFromSnapshotParams, Daytona, DaytonaConfig
     d = Daytona(DaytonaConfig(api_key=config.require("DAYTONA_API_KEY", config.DAYTONA_API_KEY)))
-    kw = {"domain_allow_list": "archive-api.open-meteo.com", "ephemeral": True}
+    targets = {
+        "open-meteo": "https://archive-api.open-meteo.com/v1/archive?latitude=0&longitude=0"
+                      "&start_date=2024-01-01&end_date=2024-01-02&daily=precipitation_sum",
+        "earth-search": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a",
+        "s2-cogs": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/",
+        "pypi": "https://pypi.org/simple/rasterio/",
+    }
+    kw = {"ephemeral": True}
+    if config.RESTRICT_NETWORK:
+        kw["domain_allow_list"] = "archive-api.open-meteo.com"
+        targets = {"open-meteo": targets["open-meteo"], "example.com": "https://example.com"}
     params = CreateSandboxFromSnapshotParams(snapshot=config.WITNESS_SNAPSHOT, **kw) if config.WITNESS_SNAPSHOT \
         else CreateSandboxFromSnapshotParams(language="python", **kw)
     t = time.time()
     sb = d.create(params, timeout=180)
     try:
-        probe = ("import urllib.request as u\n"
-                 "def ok(x):\n    try: u.urlopen(x, timeout=10); return 'OPEN'\n    except Exception as e: return 'BLOCKED'\n"
-                 "print(ok('https://archive-api.open-meteo.com/v1/archive?latitude=0&longitude=0"
-                 "&start_date=2024-01-01&end_date=2024-01-02&daily=precipitation_sum'), ok('https://example.com'))")
+        probe = ("import urllib.request as u, urllib.error as e\n"
+                 "def ok(x):\n"
+                 "    try: u.urlopen(x, timeout=10); return 'OPEN'\n"
+                 "    except e.HTTPError: return 'OPEN'\n"
+                 "    except Exception: return 'BLOCKED'\n"
+                 f"print(' '.join(ok(x) for x in {list(targets.values())!r}))")
         r = sb.process.code_run(probe)
-        allowed, blocked = (r.result or "").split()[-2:]
-        assert allowed == "OPEN", f"許可したドメインに届かない: {r.result}"
-        assert blocked == "BLOCKED", "許可していないドメインに届いてしまう（通信制限が効いていない）"
-        return f"sandbox {sb.id} 起動 {time.time() - t:.0f} 秒 / 許可先 OPEN / 他 BLOCKED"
+        res = dict(zip(targets, (r.result or "").split()[-len(targets):]))
+        if config.RESTRICT_NETWORK:
+            assert res.get("open-meteo") == "OPEN", f"許可したドメインに届かない: {r.result}"
+            assert res.get("example.com") == "BLOCKED", "許可していないドメインに届いてしまう（通信制限が効いていない）"
+        else:
+            # PREFETCH=1 なら STAC 検索と気象 API は手元で引くので、サンドボックスは S3 の画素だけ読めればよい
+            need = ["s2-cogs"] if config.PREFETCH else list(targets)
+            if not config.WITNESS_SNAPSHOT:
+                need.append("pypi")
+            blocked = [k for k in need if res.get(k) != "OPEN"]
+            assert not blocked, f"サンドボックスから届かない取得先: {blocked}（Daytona のティア制限の可能性）"
+        return f"sandbox {sb.id} 起動 {time.time() - t:.0f} 秒 / " + " ".join(f"{k}:{v}" for k, v in res.items())
     finally:
         d.delete(sb)
 

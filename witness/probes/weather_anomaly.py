@@ -47,20 +47,44 @@ def precip_anomaly(daily: dict, start: date, end: date, years_back: int = YEARS_
 
 
 # ---------- 入出力 ----------
-def fetch_daily(lat, lon, start: date, end: date) -> dict:
+PREFETCH: dict = {}
+
+
+def daily_url(lat, lon, start: date, end: date) -> str:
     q = urllib.parse.urlencode({"latitude": lat, "longitude": lon, "start_date": start.isoformat(),
                                 "end_date": end.isoformat(), "daily": "precipitation_sum", "timezone": "UTC"})
-    with urllib.request.urlopen(f"{API}?{q}", timeout=60) as r:
-        d = json.load(r)["daily"]
+    return f"{API}?{q}"
+
+
+def fetch_daily(lat, lon, start: date, end: date) -> dict:
+    url = daily_url(lat, lon, start, end)
+    d = PREFETCH.get(url)
+    if d is None:
+        with urllib.request.urlopen(url, timeout=60) as r:
+            d = json.load(r)["daily"]
     return {date.fromisoformat(t): v for t, v in zip(d["time"], d["precipitation_sum"])}
+
+
+def span(p):
+    ev = date.fromisoformat(p["event_date"])
+    start = ev - timedelta(days=p.get("accum_days_before", 3))
+    end = ev + timedelta(days=p.get("accum_days_after", 1))
+    return start, end
+
+
+def prefetch(p) -> dict:
+    """[オーケストレーター側で実行] 気象 API を先に引いておく。"""
+    start, end = span(p)
+    url = daily_url(p["aoi"]["lat"], p["aoi"]["lon"], shift_year(start, YEARS_BACK), end)
+    with urllib.request.urlopen(url, timeout=60) as r:
+        return {url: json.load(r)["daily"]}
 
 
 def main():
     p = load_params()
+    PREFETCH.update(p.get("_prefetch", {}))
     aoi, out = p["aoi"], p.get("out_dir", "out")
-    ev = date.fromisoformat(p["event_date"])
-    lead, lag = p.get("accum_days_before", 3), p.get("accum_days_after", 1)
-    start, end = ev - timedelta(days=lead), ev + timedelta(days=lag)
+    start, end = span(p)
 
     daily = fetch_daily(aoi["lat"], aoi["lon"], shift_year(start, YEARS_BACK), end)
     value, history, (z, lo, hi) = precip_anomaly(daily, start, end)

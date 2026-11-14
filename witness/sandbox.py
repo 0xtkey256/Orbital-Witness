@@ -78,12 +78,35 @@ class Executor(Protocol):
     def close(self, handle) -> None: ...
 
 
-def prepare(job: ProbeJob) -> None:
+def load_probe_module(job: ProbeJob):
+    import importlib.util
+    d = str(job.source_dir)
+    if d not in sys.path:
+        sys.path.insert(0, d)  # プローブは _common / _stats を相対名で import する
+    spec = importlib.util.spec_from_file_location(f"witness_probe_{job.probe}", job.source_dir / f"{job.probe}.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def run_prefetch(job: ProbeJob) -> None:
+    """メタデータ（STAC 検索・気象 API）はオーケストレーター側で引き、params に同梱する。
+    サンドボックスは画素（S3 の COG）だけを読む。Daytona のティア制限で外部 API に出られなくても動く。"""
+    if "_prefetch" in job.params:
+        return
+    mod = load_probe_module(job)
+    if hasattr(mod, "prefetch"):
+        job.params = {**job.params, "_prefetch": mod.prefetch(job.params)}
+
+
+def prepare(job: ProbeJob, prefetch: bool = False) -> None:
     """プローブのコピーを run ごとの作業ディレクトリに置く（修復はこのコピーに対して行う）。"""
     job.workdir.mkdir(parents=True, exist_ok=True)
     for name in SHARED + [f"{job.probe}.py"]:
         if not (job.workdir / name).exists():
             shutil.copy(job.source_dir / name, job.workdir / name)
+    if prefetch:
+        run_prefetch(job)
     (job.workdir / "params.json").write_text(json.dumps(job.params, ensure_ascii=False, default=str))
 
 
@@ -120,6 +143,7 @@ class LocalExecutor:
 
 class DaytonaExecutor:
     name = "daytona"
+    prefetch = config.PREFETCH
 
     def __init__(self, snapshot: str = config.WITNESS_SNAPSHOT, restrict_network: bool = config.RESTRICT_NETWORK):
         from daytona import Daytona, DaytonaConfig
@@ -201,7 +225,10 @@ def _failed(job, sandbox_id, error, repairs=0) -> ProbeResult:
 
 async def run_job(job: ProbeJob, executor: Executor, repair: Optional[Repair] = None,
                   max_repairs: int = 2) -> ProbeResult:
-    prepare(job)
+    try:
+        await asyncio.to_thread(prepare, job, getattr(executor, "prefetch", False))
+    except Exception as e:
+        return _failed(job, "", f"メタデータ取得失敗: {type(e).__name__}: {e}")
     try:
         handle = await asyncio.to_thread(executor.open, job)
     except Exception as e:

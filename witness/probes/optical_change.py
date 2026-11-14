@@ -121,7 +121,19 @@ def read_asset(href, g, resampling):
         return vrt.read(1)
 
 
+# オーケストレーター側で引いた STAC の検索結果（params["_prefetch"]）。あればネットに出ない
+PREFETCH: dict = {}
+
+
+def stac_key(window, max_cloud) -> str:
+    return f"stac:{window[0]}/{window[1]}:lt{max_cloud}"
+
+
 def search(aoi, window, max_cloud):
+    hit = PREFETCH.get(stac_key(window, max_cloud))
+    if hit is not None:
+        import pystac
+        return [pystac.Item.from_dict(d) for d in hit]
     from pystac_client import Client
     items = Client.open(STAC_URL).search(
         collections=[COLLECTION], bbox=bbox(aoi), datetime=f"{window[0]}/{window[1]}",
@@ -145,8 +157,21 @@ def load_window(aoi, window, bands, g, max_cloud, pool):
     return composite(scenes), [it.id for it in items]
 
 
+def prefetch(p) -> dict:
+    """[オーケストレーター側で実行] 4 つの期間の STAC 検索を先に済ませる。
+    サンドボックスは S3 の COG を読むだけになり、カタログ API への通信が要らなくなる。"""
+    aoi, max_cloud, res = p["aoi"], p.get("max_cloud", 40), {}
+    for grp in ("target", "control"):
+        for k in ("before", "after"):
+            w = p.get(grp, {}).get(k)
+            if w:
+                res[stac_key(w, max_cloud)] = [it.to_dict() for it in search(aoi, w, max_cloud)]
+    return res
+
+
 def main():
     p = load_params()
+    PREFETCH.update(p.get("_prefetch", {}))
     aoi, out, size = p["aoi"], p.get("out_dir", "out"), p.get("size", 512)
     os.makedirs(out, exist_ok=True)
     wanted = [m for m in p["measures"] if m in BANDS_FOR] or ["new_water_frac"]

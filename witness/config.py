@@ -17,6 +17,8 @@ DAYTONA_API_KEY = os.environ.get("DAYTONA_API_KEY", "")
 WITNESS_SNAPSHOT = os.environ.get("WITNESS_SNAPSHOT", "")
 # 1 ならデータ取得先以外への通信を遮断する
 RESTRICT_NETWORK = os.environ.get("WITNESS_RESTRICT_NETWORK", "1") == "1"
+# 1 なら STAC 検索・気象 API は手元で引いて params に同梱し、サンドボックスは S3 の画素だけ読む
+PREFETCH = os.environ.get("WITNESS_PREFETCH", "1") == "1"
 
 # Copernicus Data Space（SAR）。Daytona の組織 Secret 名を指定すると平文をサンドボックスに入れない
 CDSE_CLIENT_ID = os.environ.get("CDSE_CLIENT_ID", "")

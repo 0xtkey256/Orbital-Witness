@@ -29,4 +29,4 @@ ask OPENROUTER_API_KEY "OpenRouter API key (sk-or-...)"   1
 read -r -p "Nosana のデプロイ URL（/v1 なしで可）: " u
 if [ -n "$u" ]; then u="${u%/}"; [[ "$u" == */v1 ]] || u="$u/v1"; set_kv NOSANA_BASE_URL "$u"; echo "  ✓ NOSANA_BASE_URL を保存"; fi
 chmod 600 .env
-echo "完了。Claude に「入れた」と伝えてください。"
+echo "完了。"
