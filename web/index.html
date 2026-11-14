@@ -18,10 +18,12 @@
 <header class="topbar">
   <a class="brand" href="#top"><span class="brand-orb" aria-hidden="true"></span>Orbital Witness</a>
   <nav class="nav">
+    <a href="#why">Why now</a>
     <a href="#how">How it works</a>
     <a href="#case">Live case</a>
     <a href="#sponsors">Stack</a>
     <a href="#uses">Use cases</a>
+    <button class="lang-toggle mono" id="lang-toggle" type="button" aria-label="Switch language">EN / 日本語</button>
     <a class="nav-gh" href="https://github.com/0xtkey256/Orbital-Witness" target="_blank" rel="noopener noreferrer">GitHub</a>
   </nav>
 </header>
@@ -33,7 +35,7 @@
       <div class="hero-copy">
         <p class="eyebrow mono">// claim verification from orbit</p>
         <h1>Orbital<br>Witness</h1>
-        <p class="pitch">An agent that turns a viral claim into a <em>pre-registered experiment</em>, then tests it against satellite and weather data. The verdict is computed by formula, not by an LLM.</p>
+        <p class="pitch" data-i18n="pitch">An agent that turns a viral claim into a <em>pre-registered experiment</em>, then tests it against satellite and weather data. The verdict is computed by formula, not by an LLM.</p>
         <p class="pitch-jp" lang="ja">拡散する主張を、AIが事前登録された実験に変え、衛星と気象データで反証可能な形で検証する</p>
         <div class="hero-ctas">
           <a class="btn btn-primary" href="#case">See the live case</a>
@@ -62,12 +64,28 @@
     </div>
   </section>
 
+  <!-- WHY NOW -->
+  <section class="section" id="why">
+    <div class="section-head">
+      <p class="eyebrow mono">// the problem</p>
+      <h2>Why now</h2>
+      <p class="lede" data-i18n="why_lede">Generative AI made claims about the physical world cheap to fabricate and cheap to "verify" with another model. Neither scales trust. The ground truth already exists: free satellites revisit every point on Earth every few days. Nobody checks it at the speed claims spread.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why"><span class="why-n mono">01</span><h3>Fakes are free</h3><p>AI-generated flood photos, recycled old videos and place-swapped captions spread faster than any newsroom can check them.</p></div>
+      <div class="why"><span class="why-n mono">02</span><h3>LLM verdicts are opinions</h3><p>Ask a model to fact-check and it writes a convincing rationale after the fact. It can argue either side, and nobody can re-run it.</p></div>
+      <div class="why"><span class="why-n mono">03</span><h3>Agents act on claims</h3><p>Insurance payouts, aid allocation and supply-chain audits are being automated. A machine that pays out needs evidence a machine can audit.</p></div>
+      <div class="why"><span class="why-n mono">04</span><h3>Orbit already saw it</h3><p>Sentinel-2 and ERA5 are open and global. The missing piece is an agent that asks the right question first and lets the data answer.</p></div>
+    </div>
+    <p class="why-answer" data-i18n="why_answer"><strong>Our answer:</strong> the AI designs the experiment and is then locked out of the verdict. Hypothesis and thresholds are sealed before any pixel is read, and the result is a formula anyone can re-run.</p>
+  </section>
+
   <!-- HOW IT WORKS -->
   <section class="section" id="how">
     <div class="section-head">
       <p class="eyebrow mono">// pipeline</p>
       <h2>How it works</h2>
-      <p class="lede">Three AgentField nodes (<span class="mono">witness-scout</span>, <span class="mono">witness-lab</span>, <span class="mono">witness-core</span>) carry a claim from rumor to a reproducible verdict.</p>
+      <p class="lede" data-i18n="how_lede">Three AgentField nodes (<span class="mono">witness-scout</span>, <span class="mono">witness-lab</span>, <span class="mono">witness-core</span>) carry a claim from rumor to a reproducible verdict.</p>
     </div>
     <div class="diagram panel">
       <div id="pipeline-wide" class="pipe pipe-wide"></div>
@@ -206,6 +224,7 @@
   <a class="btn btn-ghost" href="https://github.com/0xtkey256/Orbital-Witness" target="_blank" rel="noopener noreferrer">github.com/0xtkey256/Orbital-Witness</a>
 </footer>
 
+<script src="js/i18n.js"></script>
 <script src="js/motion.js"></script>
 <script src="js/pipeline.js"></script>
 <script src="js/app.js"></script>
