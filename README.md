@@ -4,7 +4,7 @@
 
 **Put satellites on the witness stand.** An agent that turns viral claims into pre-registered experiments and tests them against satellite and weather data — the verdict comes from a formula, not from an LLM.
 
-Agent Forge AI Hackathon Tokyo · 2026-11-14
+Agent Forge AI Hackathon Tokyo · 2026-11-14 · **Live demo: https://0xtkey256.github.io/Orbital-Witness/**
 
 | Claim | Verdict | Evidence |
 |---|---|---|
