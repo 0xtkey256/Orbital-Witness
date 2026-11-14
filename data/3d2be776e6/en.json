@@ -1,0 +1,22 @@
+{
+ "2024年4月16日の記録的豪雨で、エジプトのカイロ国際空港周辺が広範囲に冠水した": "On April 16, 2024, record heavy rainfall caused widespread flooding around Cairo International Airport in Egypt.",
+ "2024年4月16日の記録的豪雨で、エジプトのカイロ国際空港周辺が広範囲に冠水したという主張は、衛星画像判読の結果により否定されました。": "The claim that record heavy rainfall on April 16, 2024, caused widespread flooding around Cairo International Airport in Egypt was denied based on satellite image analysis.",
+ "flood.new_water.s2: flood.new_water.s2 と同じ観測のため重複として統合": "flood.new_water.s2: merged as a duplicate for the same observation as flood.new_water.s2",
+ "flood.precip.meteo: flood.precip.meteo と同じ観測のため重複として統合": "flood.precip.meteo: merged as a duplicate for the same observation as flood.precip.meteo",
+ "flood.vv_drop.s1: flood.vv_drop.s1 と同じ観測のため重複として統合": "flood.vv_drop.s1: merged as a duplicate for the same observation as flood.vv_drop.s1",
+ "new_water_frac=-0.010（区間の上限 -0.006 < 閾値 0.005）": "new_water_frac=-0.010 (upper limit of interval -0.006 < threshold 0.005)",
+ "precip_z=-0.342（区間の上限 -0.248 < 閾値 2.0）": "precip_z=-0.342 (upper limit of interval -0.248 < threshold 2.0)",
+ "signature_1: 閾値を緩める提案（1.0）は却下": "signature_1: proposal to relax the threshold (1.0) is rejected",
+ "プローブ失敗: 未実行": "Probe failure: not executed",
+ "冠水域では NDWI が上がり、平常時は陸の画素が水になる。市街地を含む 8km 四方では冠水は面積の 1% 前後（数 km²）になるため、差の差で 0.5% を最小効果とする": "In flooded areas, NDWI increases, and during normal times, land pixels become water. In an 8km square including urban areas, flooding is around 1% of the area (several km²), so the minimum effect is set at 0.5% based on the difference of differences.",
+ "別日の出来事": "Events on a different day",
+ "収穫": "Harvest",
+ "大規模冠水の直前には平年を大きく上回る降水がある": "There is significantly above-average precipitation just before large-scale flooding.",
+ "季節変動": "Seasonal variation",
+ "恒久的な水域": "Permanent water bodies",
+ "新規水の割合が-0.010であり、閾値0.005を下回っています。": "The proportion of new water is -0.010, which is below the threshold of 0.005.",
+ "水面は鏡面反射で VV 後方散乱が 3dB 以上下がる。雲を透過する": "The water surface has mirror-like reflection, causing VV backscatter to drop by more than 3dB. It penetrates clouds.",
+ "潮位": "Tide level",
+ "降水強度が-0.342であり、閾値2.0を下回っています。": "Precipitation intensity is -0.342, which is below the threshold of 2.0.",
+ "雲の影": "Cloud shadow"
+}

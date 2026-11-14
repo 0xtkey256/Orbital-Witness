@@ -109,23 +109,51 @@
     "Show fewer": "少なく表示"
   };
 
-  var lang = "en", orig = new WeakMap(), busy = false;
+  var lang = "en", orig = new WeakMap(), busy = false, EN = {}, REV = {};
+  var JP = /[\u3040-\u30ff\u4e00-\u9fff]/;
+  // Japanese strings inside run data (claims, LLM explanations) → English, built by scripts/export_web.py
+  fetch("data/index.json").then(function (r) { return r.json(); }).then(function (idx) {
+    var runs = (idx.runs || idx || []).map(function (x) { return x.run_id || x; });
+    return Promise.all(runs.map(function (id) {
+      return fetch("data/" + id + "/en.json").then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    }));
+  }).then(function (maps) { maps.forEach(function (m) { for (var k in m) { EN[k] = m[k]; REV[m[k].trim()] = k; } }); if (lang === "en") apply(); })
+    .catch(function () {});
   try { lang = new URLSearchParams(location.search).get("lang") || localStorage.getItem("ow-lang") || ""; } catch (e) { lang = ""; }
   if (!lang) lang = (navigator.language || "").toLowerCase().indexOf("ja") === 0 ? "ja" : "en";
 
+  // bilingual labels rendered by app.js ("本当の主張 / True claim") → one language
+  var LABELS = [["本当の主張 / True claim", "True claim", "本当の主張"], ["誤情報 / False claim", "False claim", "誤情報"]];
+  function labels(n) {
+    var src = orig.has(n) ? orig.get(n) : n.nodeValue, out = src, hit = false;
+    LABELS.forEach(function (l) { if (out.indexOf(l[0]) >= 0) { out = out.replace(l[0], lang === "ja" ? l[2] : l[1]); hit = true; } });
+    if (!hit) return false;
+    if (!orig.has(n)) orig.set(n, n.nodeValue);
+    n.nodeValue = out; return true;
+  }
   function translateNode(n) {
     var raw = n.nodeValue, key = raw.trim();
     if (!key) return;
+    if (labels(n)) return;
     if (lang === "ja") {
       var src = orig.has(n) ? orig.get(n) : raw;
       var k2 = src.trim(), ja = T[k2];
       if (ja === undefined && /^Show all \d+ sources$/.test(k2)) ja = "全 " + k2.match(/\d+/)[0] + " 件を表示";
+      if (ja === undefined && !orig.has(n) && REV[k2] !== undefined) ja = REV[k2];  // English run text without a stored original
       if (ja !== undefined) {
         if (!orig.has(n)) orig.set(n, raw);
         n.nodeValue = src.replace(k2, ja);
+      } else if (orig.has(n)) {  // e.g. run data shown in English before the switch
+        n.nodeValue = orig.get(n); orig.delete(n);
       }
-    } else if (orig.has(n)) {
-      n.nodeValue = orig.get(n); orig.delete(n);
+    } else {
+      var s0 = orig.has(n) ? orig.get(n) : raw, k0 = s0.trim();
+      if (JP.test(k0) && EN[k0] !== undefined) {
+        if (!orig.has(n)) orig.set(n, raw);
+        n.nodeValue = s0.replace(k0, EN[k0]);
+      } else if (orig.has(n)) {
+        n.nodeValue = orig.get(n); orig.delete(n);
+      }
     }
   }
   function walk(root) {
@@ -150,7 +178,7 @@
     mo.takeRecords(); busy = false;
   }
   var mo = new MutationObserver(function (recs) {
-    if (busy || lang !== "ja") return;
+    if (busy) return;
     busy = true;
     recs.forEach(function (r) {
       r.addedNodes.forEach(function (n) { n.nodeType === 3 ? translateNode(n) : n.nodeType === 1 && walk(n); });
