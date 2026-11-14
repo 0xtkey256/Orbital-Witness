@@ -47,7 +47,8 @@ def discover_probes() -> dict[str, str]:
     if not DIRECT:
         try:
             found = app.discover(tags=["probe"]).json
-            targets = {r.id.removeprefix("probe_"): r.invocation_target
+            # discovery は "node:reasoner" を返すが、app.call は "node.reasoner" を要求する
+            targets = {r.id.removeprefix("probe_"): r.invocation_target.replace(":", ".", 1)
                        for cap in found.capabilities for r in cap.reasoners if r.id.startswith("probe_")}
             if targets:
                 return targets
