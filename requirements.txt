@@ -1,0 +1,14 @@
+# 手元（オーケストレーター）
+agentfield>=0.1.140
+daytona>=0.231
+tavily-python>=0.8
+openai>=1.40
+httpx>=0.27
+python-dotenv>=1.0
+pydantic>=2.6
+numpy>=1.26
+pytest>=8
+# プローブ（サンドボックス内。LocalExecutor で手元実行するときも必要）
+rasterio>=1.3
+pystac-client>=0.7
+pillow>=10
