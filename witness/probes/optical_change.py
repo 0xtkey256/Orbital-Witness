@@ -125,12 +125,26 @@ def read_asset(href, g, resampling):
 PREFETCH: dict = {}
 
 
-def stac_key(window, max_cloud) -> str:
-    return f"stac:{window[0]}/{window[1]}:lt{max_cloud}"
+# 冠水は数日で引く。事後の窓は「雲が少ない順」ではなく「出来事に近い順」に選ぶ
+SHORT_LIVED = {"new_water_frac"}
 
 
-def search(aoi, window, max_cloud):
-    hit = PREFETCH.get(stac_key(window, max_cloud))
+def stac_key(window, max_cloud, order="cloud") -> str:
+    return f"stac:{window[0]}/{window[1]}:lt{max_cloud}:{order}"
+
+
+def pick(items, order):
+    if order == "early":
+        return sorted(items, key=lambda it: it.properties.get("datetime", ""))[:MAX_SCENES]
+    return sorted(items, key=lambda it: it.properties.get("eo:cloud_cover", 100))[:MAX_SCENES]
+
+
+def after_order(measures) -> str:
+    return "early" if SHORT_LIVED & set(measures) else "cloud"
+
+
+def search(aoi, window, max_cloud, order="cloud"):
+    hit = PREFETCH.get(stac_key(window, max_cloud, order))
     if hit is not None:
         import pystac
         return [pystac.Item.from_dict(d) for d in hit]
@@ -138,11 +152,11 @@ def search(aoi, window, max_cloud):
     items = Client.open(STAC_URL).search(
         collections=[COLLECTION], bbox=bbox(aoi), datetime=f"{window[0]}/{window[1]}",
         query={"eo:cloud_cover": {"lt": max_cloud}}, max_items=40).item_collection()
-    return sorted(items, key=lambda it: it.properties.get("eo:cloud_cover", 100))[:MAX_SCENES]
+    return pick(items, order)
 
 
-def load_window(aoi, window, bands, g, max_cloud, pool):
-    items = search(aoi, window, max_cloud)
+def load_window(aoi, window, bands, g, max_cloud, pool, order="cloud"):
+    items = search(aoi, window, max_cloud, order)
     if not items:
         raise NoData(f"{window} に雲量 {max_cloud}% 未満のシーンがありません")
     jobs = {(it.id, b): pool.submit(read_asset, it.assets[b].href, g, "bilinear") for it in items for b in bands}
@@ -161,11 +175,13 @@ def prefetch(p) -> dict:
     """[オーケストレーター側で実行] 4 つの期間の STAC 検索を先に済ませる。
     サンドボックスは S3 の COG を読むだけになり、カタログ API への通信が要らなくなる。"""
     aoi, max_cloud, res = p["aoi"], p.get("max_cloud", 40), {}
+    order_after = after_order(p.get("measures", []))
     for grp in ("target", "control"):
         for k in ("before", "after"):
             w = p.get(grp, {}).get(k)
             if w:
-                res[stac_key(w, max_cloud)] = [it.to_dict() for it in search(aoi, w, max_cloud)]
+                order = order_after if k == "after" else "cloud"
+                res[stac_key(w, max_cloud, order)] = [it.to_dict() for it in search(aoi, w, max_cloud, order)]
     return res
 
 
@@ -178,12 +194,13 @@ def main():
     bands = sorted({"red", "green", "blue"}.union(*(BANDS_FOR[m] for m in wanted)))
     g, max_cloud = grid(aoi, size), p.get("max_cloud", 40)
 
+    oa = after_order(wanted)
     with ThreadPoolExecutor(16) as pool:
         tb, ids_b = load_window(aoi, p["target"]["before"], bands, g, max_cloud, pool)
-        ta, ids_a = load_window(aoi, p["target"]["after"], bands, g, max_cloud, pool)
+        ta, ids_a = load_window(aoi, p["target"]["after"], bands, g, max_cloud, pool, oa)
         try:
             cb, ids_cb = load_window(aoi, p["control"]["before"], bands, g, max_cloud, pool)
-            ca, ids_ca = load_window(aoi, p["control"]["after"], bands, g, max_cloud, pool)
+            ca, ids_ca = load_window(aoi, p["control"]["after"], bands, g, max_cloud, pool, oa)
             c_masks, c_valid = change_masks(cb, ca)
         except NoData:
             ids_cb = ids_ca = []

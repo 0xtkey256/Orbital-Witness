@@ -236,7 +236,7 @@ def test_optical_main_end_to_end(tmp_path, monkeypatch, capsys):
     import json
     windows = {}
 
-    def fake_search(aoi, window, max_cloud):
+    def fake_search(aoi, window, max_cloud, order="cloud"):
         key = tuple(window)
         windows[key] = True
         is_target_after = window[0].startswith("2024-04-16")
