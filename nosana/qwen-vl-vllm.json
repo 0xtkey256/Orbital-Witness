@@ -7,7 +7,7 @@
       "type": "container/run",
       "id": "qwen-vl",
       "args": {
-        "image": "docker.io/vllm/vllm-openai:latest",
+        "image": "docker.io/vllm/vllm-openai:v0.32.0",
         "cmd": [
           "--model", "Qwen/Qwen2.5-VL-7B-Instruct",
           "--served-model-name", "qwen-vl",
