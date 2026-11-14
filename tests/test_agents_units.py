@@ -190,3 +190,31 @@ def test_corroborate_is_time_bounded_two_sided_and_prefers_authorities():
     assert len(urls) == len(set(u.rstrip("/") for u in urls)) == 3
     assert next(s for s in res["sources"] if "reliefweb" in s["url"])["authoritative"]
     assert all(s.get("body", "").startswith("body of") for s in res["sources"])
+
+
+# ---------- Tavily は任意 ----------
+def test_tavily_skipped_without_key(monkeypatch):
+    from witness import config, scout
+    monkeypatch.setattr(config, "TAVILY_API_KEY", "")
+    r = scout.scan("Dubai flood")
+    assert r["sources"] == [] and "未設定" in r["skipped"]
+    c = scout.corroborate("Dubai flood", "Dubai", __import__("datetime").date(2024, 4, 16))
+    assert c["sources"] == [] and c["skipped"]
+
+
+def test_tavily_quota_error_trips_breaker(monkeypatch):
+    from witness import config, scout
+    monkeypatch.setattr(config, "TAVILY_API_KEY", "tvly-real")
+    monkeypatch.setattr(config, "TAVILY_MODE", "auto")
+    monkeypatch.setattr(scout, "_disabled_reason", None)
+    calls = []
+
+    class Broke:
+        def search(self, *a, **k):
+            calls.append(1)
+            raise RuntimeError("UsageLimitExceededError: This request exceeds your plan's set usage limit")
+
+    monkeypatch.setattr(scout, "client", lambda: Broke())
+    assert scout.scan("x")["skipped"]
+    assert scout.scan("x")["skipped"].startswith("Tavily が使えない")
+    assert len(calls) == 1  # 2 回目は呼ばずに飛ばす

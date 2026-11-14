@@ -26,6 +26,8 @@ CDSE_CLIENT_SECRET = os.environ.get("CDSE_CLIENT_SECRET", "")
 CDSE_SECRET_NAME = os.environ.get("CDSE_DAYTONA_SECRET", "")
 
 TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY", "")
+# auto: キーがあれば使い、クレジット切れ等で失敗したら以降は飛ばす / 0: 使わない / 1: 失敗を例外にする
+TAVILY_MODE = os.environ.get("WITNESS_TAVILY", "auto").lower()
 NOSANA_BASE_URL = os.environ.get("NOSANA_BASE_URL", "").rstrip("/")
 NOSANA_MODEL = os.environ.get("NOSANA_MODEL", "qwen-vl")
 NOSANA_API_KEY = os.environ.get("NOSANA_API_KEY", "none")

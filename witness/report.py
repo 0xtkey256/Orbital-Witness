@@ -67,7 +67,7 @@ a{{color:inherit}} ul{{padding-left:1.2em;max-width:44em}}
 <h2>証拠台帳（判定は数式で確定）</h2><div class="scroll"><table>{rows}</table></div>
 <h2>データを見る前に検討した代替説明</h2><ul>{alts}</ul>
 <h2>計画の調整（LLM の提案とガード）</h2><ul>{log}</ul>
-<h2>報道と観測</h2><p>{e(ex.get('media_vs_observation', ''))}</p><ul>{sources}</ul>
+<h2>報道と観測</h2><p>{e(ex.get('media_vs_observation', ''))}</p><ul>{sources or '<li><small>報道は取得していません（' + e((case.get("corroboration") or {}).get("skipped") or "該当なし") + '）。判定は衛星・気象の観測のみに基づきます。</small></li>'}</ul>
 <h2>画像上の注意</h2><ul>{flags}</ul>
 <h2>実行の記録</h2><ul>{probes}</ul>
 </main></body></html>"""

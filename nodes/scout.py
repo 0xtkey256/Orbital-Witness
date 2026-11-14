@@ -27,7 +27,10 @@ class StanceList(BaseModel):
 async def scan(claim: str) -> dict:
     """第 1 段: 場所・日付・出来事の種類を特定するための広い検索。"""
     res = scout.scan(claim)
-    app.note(f"Tavily: {len(res['sources'])} 件の報道を取得", tags=["tavily"])
+    if res.get("skipped"):
+        app.note(f"Tavily を省略: {res['skipped']}（主張の文面だけで計画します）", tags=["tavily"])
+    else:
+        app.note(f"Tavily: {len(res['sources'])} 件の報道を取得", tags=["tavily"])
     return res
 
 
@@ -35,6 +38,8 @@ async def scan(claim: str) -> dict:
 async def corroborate(claim: str, place: str, event_date: str) -> dict:
     """第 2・3 段: 期間を絞った賛否両方向＋公的機関の検索、本文抽出、立場の分類。"""
     res = scout.corroborate(claim, place, date.fromisoformat(event_date))
+    if res.get("skipped"):
+        app.note(f"Tavily を省略: {res['skipped']}（判定は観測のみで出します）", tags=["tavily"])
     if res["sources"]:
         listing = "\n\n".join(f"URL: {s['url']}\n題: {s['title']}\n本文: {(s.get('body') or s['snippet'])[:900]}"
                               for s in res["sources"][:10])

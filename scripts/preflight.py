@@ -17,6 +17,8 @@ from witness import config  # noqa: E402
 def tavily():
     from witness.scout import scan
     r = scan("Dubai floods April 2024")
+    if r.get("skipped"):  # 任意。無くても観測だけで判定できる
+        return f"⚠️ 省略（{r['skipped'][:120]}）— 報道なしで続行します"
     assert r["sources"], "検索結果が空"
     return f"{len(r['sources'])} 件 / 先頭: {r['sources'][0]['title'][:50]}"
 

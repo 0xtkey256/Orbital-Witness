@@ -18,6 +18,18 @@ AUTHORITATIVE = ["reliefweb.int", "emergency.copernicus.eu", "gdacs.org", "disas
 DEBUNK_HINT = "fact check OR debunked OR false OR misleading OR old video"
 
 _client: Optional[TavilyClient] = None
+# 一度クレジット切れ・認証エラーになったら、その後の呼び出しは即座に飛ばす（遅延とエラーの連鎖を防ぐ）
+_disabled_reason: Optional[str] = None
+
+
+def skip_reason() -> Optional[str]:
+    """Tavily を使わない理由（使える場合は None）。"""
+    if config.TAVILY_MODE in ("0", "off", "false"):
+        return "WITNESS_TAVILY=0 で無効化"
+    key = config.TAVILY_API_KEY
+    if not key or "xxxx" in key:
+        return "TAVILY_API_KEY が未設定"
+    return _disabled_reason
 
 
 def client() -> TavilyClient:
@@ -25,6 +37,24 @@ def client() -> TavilyClient:
     if _client is None:
         _client = TavilyClient(api_key=config.require("TAVILY_API_KEY", config.TAVILY_API_KEY))
     return _client
+
+
+def _guard(fn, empty: dict, tavily) -> dict:
+    """Tavily が使えないとき（未設定・クレジット切れ・障害）は空の結果に理由を添えて返す。
+    判定は衛星・気象の観測だけで出すので、報道が無くても検証は続けられる。"""
+    global _disabled_reason
+    reason = None if tavily is not None else skip_reason()
+    if reason:
+        return {**empty, "skipped": reason}
+    try:
+        return fn(tavily or client())
+    except Exception as e:
+        if config.TAVILY_MODE == "1":
+            raise
+        msg = f"{type(e).__name__}: {e}"[:200]
+        if any(k in msg.lower() for k in ("usage", "limit", "credit", "quota", "unauthorized", "invalid", "forbidden", "432", "433")):
+            _disabled_reason = f"Tavily が使えないため以降は省略（{msg}）"
+        return {**empty, "skipped": msg}
 
 
 def _source(r: dict, query_kind: str) -> dict:
@@ -49,16 +79,21 @@ def event_window(event_date: date, before: int = 7, after: int = 30, today: Opti
 
 def scan(claim: str, tavily: Optional[TavilyClient] = None) -> dict:
     """第 1 段: 期間を絞らず、主張の場所・日付・出来事の種類を探る。"""
-    t = tavily or client()
-    res = t.search(claim, topic="news", search_depth="advanced", max_results=8, include_answer="advanced")
-    return {"answer": res.get("answer", ""), "sources": dedupe([_source(r, "scan") for r in res.get("results", [])])}
+    def go(t):
+        res = t.search(claim, topic="news", search_depth="advanced", max_results=8, include_answer="advanced")
+        return {"answer": res.get("answer", ""), "sources": dedupe([_source(r, "scan") for r in res.get("results", [])])}
+    return _guard(go, {"answer": "", "sources": []}, tavily)
 
 
 def corroborate(claim: str, place: str, event_date: date, tavily: Optional[TavilyClient] = None,
                 extract_top: int = 4) -> dict:
     """第 2・3 段: 出来事の期間に絞って、賛否両方向と公的機関の情報を集め、上位を本文抽出する。"""
-    t = tavily or client()
     start, end = event_window(event_date)
+    return _guard(lambda t: _corroborate(t, claim, place, event_date, start, end, extract_top),
+                  {"window": [start, end], "sources": []}, tavily)
+
+
+def _corroborate(t, claim, place, event_date, start, end, extract_top) -> dict:
     q_support = f"{claim} {place}"
     q_refute = f"{place} {claim} {DEBUNK_HINT}"
     support = t.search(q_support, topic="news", start_date=start, end_date=end, max_results=6)

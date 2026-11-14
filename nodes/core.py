@@ -65,6 +65,9 @@ def probe_catalog(available: dict[str, str]) -> str:
 @app.reasoner(tags=["planner"])
 async def plan(claim: str, scan: dict, catalog: str) -> dict:
     digest = "\n".join(f"[{s['published']}] {s['title']} — {s['snippet'][:300]}" for s in scan["sources"][:8])
+    if not digest:
+        digest = "（報道は取得していません。主張の文面だけから場所・日付・出来事の種類を特定してください。" \
+                 "日付が不明なら主張に最も整合する日付を1つ選び、place は地図で引ける具体的な地名にします）"
     draft: PlanDraft = await app.ai(
         system="あなたは衛星観測の実験計画者です。主張を、衛星・気象データで反証可能な仮説に変換します。"
                "報道から場所と日付を特定し、出来事の種類を選びます。既定の観測シグネチャは自動で入るので、"
@@ -131,7 +134,10 @@ async def verify_claim(claim: str) -> dict:
     catalog = probe_catalog(available)
 
     # 1. 探索 → 計画
-    scan_res = await call(app, "witness-scout.scan", scout_node.scan if DIRECT else None, claim=claim)
+    try:
+        scan_res = await call(app, "witness-scout.scan", scout_node.scan if DIRECT else None, claim=claim)
+    except Exception as e:  # scout ノードが落ちていても検証は止めない
+        scan_res = {"answer": "", "sources": [], "skipped": f"{type(e).__name__}: {e}"[:200]}
     draft = PlanDraft(**await call(app, "witness-core.plan", plan, claim=claim, scan=scan_res, catalog=catalog))
     loc = geo.geocode(draft.place)
     if loc is None:
