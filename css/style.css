@@ -350,3 +350,17 @@ select { background: var(--panel-solid); color: var(--text); border: 1px solid v
 @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) { .fx-stars, .fx-orbit { display: none; } .hero h1 { color: var(--text); background: none; } }
 .stars { display: none; }
+
+/* ---------- why now + language toggle ---------- */
+.lang-toggle { background: transparent; color: var(--text); border: 1px solid var(--line-strong); border-radius: 999px;
+  padding: 6px 12px; font-size: 0.78rem; cursor: pointer; }
+.lang-toggle:hover { border-color: var(--cyan); color: var(--cyan); }
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.why { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; position: relative; overflow: hidden; }
+.why::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: linear-gradient(90deg, var(--red), transparent); }
+.why h3 { margin: 6px 0 6px; font-size: 1.05rem; }
+.why p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.why-n { color: var(--red); font-size: 0.8rem; }
+.why-answer { margin-top: 18px; padding: 16px 18px; border-left: 3px solid var(--green); background: rgba(61,220,151,0.06); border-radius: 8px; }
+@media (max-width: 900px) { .why-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .why-grid { grid-template-columns: 1fr; } }
