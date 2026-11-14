@@ -1,7 +1,12 @@
 {
   "version": "0.1",
   "type": "container",
-  "meta": { "trigger": "cli", "system_requirements": { "required_vram": 20 } },
+  "meta": {
+    "trigger": "cli",
+    "system_requirements": {
+      "required_vram": 20
+    }
+  },
   "ops": [
     {
       "type": "container/run",
@@ -9,17 +14,33 @@
       "args": {
         "image": "docker.io/vllm/vllm-openai:v0.32.0",
         "cmd": [
-          "--model", "Qwen/Qwen2.5-VL-7B-Instruct",
-          "--served-model-name", "qwen-vl",
-          "--port", "9000",
-          "--max-model-len", "16384",
-          "--gpu-memory-utilization", "0.92",
-          "--limit-mm-per-prompt", "{\"image\": 4}"
+          "--model",
+          "Qwen/Qwen2.5-VL-7B-Instruct",
+          "--served-model-name",
+          "qwen-vl",
+          "--port",
+          "9000",
+          "--max-model-len",
+          "16384",
+          "--gpu-memory-utilization",
+          "0.92",
+          "--limit-mm-per-prompt.image",
+          "4"
         ],
         "gpu": true,
         "expose": [
-          { "port": 9000,
-            "health_checks": [ { "type": "http", "path": "/v1/models", "method": "GET", "expected_status": 200, "continuous": true } ] }
+          {
+            "port": 9000,
+            "health_checks": [
+              {
+                "type": "http",
+                "path": "/v1/models",
+                "method": "GET",
+                "expected_status": 200,
+                "continuous": true
+              }
+            ]
+          }
         ]
       }
     }
