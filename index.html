@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbital Witness</title>
+<meta name="description" content="Orbital Witness turns a viral claim into a pre-registered experiment and tests it against satellite and weather data. The verdict is computed by formula, not by an LLM.">
+<meta name="theme-color" content="#05080f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='6' fill='%234fd1ff'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='5' fill='none' stroke='%234fd1ff' stroke-width='2' transform='rotate(-25 16 16)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="#top"><span class="brand-orb" aria-hidden="true"></span>Orbital Witness</a>
+  <nav class="nav">
+    <a href="#how">How it works</a>
+    <a href="#case">Live case</a>
+    <a href="#sponsors">Stack</a>
+    <a href="#uses">Use cases</a>
+    <a class="nav-gh" href="https://github.com/0xtkey256/Orbital-Witness" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow mono">// claim verification from orbit</p>
+        <h1>Orbital<br>Witness</h1>
+        <p class="pitch">An agent that turns a viral claim into a <em>pre-registered experiment</em>, then tests it against satellite and weather data. The verdict is computed by formula, not by an LLM.</p>
+        <p class="pitch-jp" lang="ja">拡散する主張を、AIが事前登録された実験に変え、衛星と気象データで反証可能な形で検証する</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#case">See the live case</a>
+          <a class="btn btn-ghost" href="#how">How it works</a>
+        </div>
+      </div>
+      <aside class="hero-card" id="hero-card" aria-live="polite">
+        <div class="hc-head mono"><span class="dot pulse"></span> FEATURED RUN <span id="hc-run" class="hc-run"></span></div>
+        <p class="hc-claim" lang="ja" id="hc-claim">Loading run…</p>
+        <div class="hc-verdict">
+          <span class="badge" id="hc-badge">—</span>
+          <div class="hc-post">
+            <span class="mono small muted">posterior P(claim)</span>
+            <strong id="hc-posterior" class="mono">—</strong>
+          </div>
+        </div>
+        <div class="hc-bar"><span id="hc-bar-fill"></span></div>
+        <p class="mono small muted hc-seal">sealed sha256 <span id="hc-sha">—</span></p>
+      </aside>
+    </div>
+    <div class="hero-pillars">
+      <div class="pillar"><span class="pn mono">01</span><h3>Sealed before looking</h3><p>Hypothesis, signatures and thresholds are hashed with SHA-256 before any pixel is read. AI proposals to move thresholds are logged, never applied.</p></div>
+      <div class="pillar"><span class="pn mono">02</span><h3>Difference-in-differences</h3><p>Every change is compared against the same season one year earlier, with bootstrap confidence intervals.</p></div>
+      <div class="pillar"><span class="pn mono">03</span><h3>A skeptic in the loop</h3><p>A skeptic agent lists rival explanations first: tide, cloud shadow, irrigation, permanent water, wrong date.</p></div>
+      <div class="pillar"><span class="pn mono">04</span><h3>Verdict by formula</h3><p>Posterior log-odds = prior log-odds + &Sigma; log LR over the evidence ledger. Each signature confirms, refutes or abstains.</p></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="section-head">
+      <p class="eyebrow mono">// pipeline</p>
+      <h2>How it works</h2>
+      <p class="lede">Three AgentField nodes (<span class="mono">witness-scout</span>, <span class="mono">witness-lab</span>, <span class="mono">witness-core</span>) carry a claim from rumor to a reproducible verdict.</p>
+    </div>
+    <div class="diagram panel">
+      <div id="pipeline-wide" class="pipe pipe-wide"></div>
+      <div id="pipeline-tall" class="pipe pipe-tall"></div>
+    </div>
+  </section>
+
+  <!-- FEATURED CASE -->
+  <section class="section" id="case">
+    <div class="section-head">
+      <p class="eyebrow mono">// case file</p>
+      <h2>Featured case</h2>
+      <div class="run-select-wrap" id="run-select-wrap" hidden>
+        <label for="run-select" class="mono small muted">run</label>
+        <select id="run-select"></select>
+      </div>
+    </div>
+
+    <div id="case-error" class="panel error" hidden></div>
+
+    <div id="case-body">
+      <div class="panel claim-panel">
+        <div class="claim-top">
+          <span class="mono small muted">CLAIM · <span id="c-run"></span></span>
+          <span class="badge" id="c-badge">—</span>
+        </div>
+        <p class="claim-text" lang="ja" id="c-claim"></p>
+        <div class="chips" id="c-meta"></div>
+        <div class="seal">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 10V8a6 6 0 1 1 12 0v2h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1h1zm2 0h8V8a4 4 0 1 0-8 0v2z" fill="currentColor"/></svg>
+          <div>
+            <div class="mono small muted">Pre-registration sealed <span id="c-sealed-at"></span></div>
+            <code class="sha" id="c-sha" title=""></code>
+          </div>
+          <button class="copy mono" id="c-copy" type="button">copy</button>
+        </div>
+      </div>
+
+      <div class="case-grid">
+        <div class="panel imagery">
+          <div class="panel-head">
+            <h3>Sentinel-2 imagery</h3>
+            <div class="seg" role="tablist" id="img-mode">
+              <button type="button" data-mode="slider" class="on">Slider</button>
+              <button type="button" data-mode="side">Side by side</button>
+              <button type="button" data-mode="change">Change map</button>
+            </div>
+          </div>
+          <div id="img-stage"></div>
+          <p class="small muted img-note" id="img-note"></p>
+        </div>
+
+        <div class="panel gauge-panel">
+          <div class="panel-head"><h3>Posterior</h3><span class="mono small muted">computed, not generated</span></div>
+          <div id="gauge"></div>
+          <div class="formula mono" id="formula"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Evidence ledger</h3><span class="mono small muted">one measure = one piece of evidence</span></div>
+        <div class="table-wrap">
+          <table class="ledger" id="ledger">
+            <thead><tr><th>Signature</th><th>Measure (95% CI)</th><th>Threshold</th><th>Outcome</th><th>log LR</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="did" id="did"></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h3>Judge explanation</h3><span class="tag tag-nosana">Nosana · Qwen2.5-VL</span></div>
+          <div id="explain" lang="ja"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Skeptic: alternatives tested</h3><span class="tag tag-nosana">Nosana</span></div>
+          <ol class="alts" id="alts" lang="ja"></ol>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h3>Plan log</h3><span class="mono small muted">thresholds frozen after seal</span></div>
+          <ul class="planlog mono" id="planlog" lang="ja"></ul>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Probe provenance</h3><span class="tag tag-daytona">Daytona sandboxes</span></div>
+          <div id="probes"></div>
+        </div>
+      </div>
+
+      <div class="panel" id="news-panel">
+        <div class="panel-head"><h3>News corroboration</h3><span class="tag tag-tavily">Tavily</span></div>
+        <div id="stance"></div>
+        <ul class="news" id="news"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPONSORS -->
+  <section class="section" id="sponsors">
+    <div class="section-head">
+      <p class="eyebrow mono">// stack</p>
+      <h2>Built with</h2>
+    </div>
+    <div class="sponsors">
+      <article class="sponsor s-agentfield"><span class="s-name">AgentField</span><p>Orchestrates the three nodes (witness-scout, witness-lab, witness-core), discovers probe skills, and keeps memory, notes and the trace.</p></article>
+      <article class="sponsor s-tavily"><span class="s-name">Tavily</span><p>Searches news both supporting and debunking the claim. Optional: the run continues without it.</p></article>
+      <article class="sponsor s-daytona"><span class="s-name">Daytona</span><p>Runs each sensor probe in its own isolated sandbox, in parallel. The sandbox only reads Sentinel-2 COG pixels from S3; metadata is prefetched.</p></article>
+      <article class="sponsor s-codeaf"><span class="s-name">CodeAF</span><p>Repairs probe code that crashes inside Daytona, via OpenRouter, then re-runs it under the same sealed plan.</p></article>
+      <article class="sponsor s-nosana"><span class="s-name">Nosana</span><p>Hosts Qwen2.5-VL-7B on vLLM on an RTX 3090 for planning, the skeptic, and image interpretation.</p></article>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="section" id="uses">
+    <div class="section-head">
+      <p class="eyebrow mono">// who it is for</p>
+      <h2>Use cases</h2>
+    </div>
+    <div class="uses">
+      <div class="use"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h13v14H5a1 1 0 0 1-1-1V5zm13 3h3v10a1 1 0 0 1-1 1h-2M7 9h7M7 12h7M7 15h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><h3>Newsroom fact-checking</h3><p>Check a viral flood, fire or blast claim against orbit within minutes, with a sealed method editors can publish.</p></div>
+      <div class="use"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3zm-3 9l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Parametric insurance</h3><p>Verify that a trigger event actually happened at the insured site before paying a claim.</p></div>
+      <div class="use"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><h3>Humanitarian damage assessment</h3><p>Triage reports of flooding or destruction so responders go where the evidence points.</p></div>
+      <div class="use"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22v-6m0 0l-5-5h3L6 6h3L12 2l3 4h3l-4 5h3l-5 5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><h3>Deforestation due diligence</h3><p>Test supplier claims of "no clearing since 2020" against the canopy record.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div>
+    <span class="brand"><span class="brand-orb" aria-hidden="true"></span>Orbital Witness</span>
+    <p class="small muted">Hackathon demo. Imagery: Copernicus Sentinel-2. Weather: Open-Meteo ERA5.</p>
+  </div>
+  <a class="btn btn-ghost" href="https://github.com/0xtkey256/Orbital-Witness" target="_blank" rel="noopener noreferrer">github.com/0xtkey256/Orbital-Witness</a>
+</footer>
+
+<script src="js/pipeline.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

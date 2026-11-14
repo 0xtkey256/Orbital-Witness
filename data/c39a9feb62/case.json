@@ -1,0 +1,477 @@
+{
+ "run_id": "c39a9feb62",
+ "claim": "2024年4月16日の記録的豪雨で、ドバイ国際空港周辺が広範囲に冠水した",
+ "prereg": {
+  "hypothesis": {
+   "claim": "2024年4月16日の記録的豪雨で、ドバイ国際空港周辺が広範囲に冠水した",
+   "event_type": "flood",
+   "aoi": {
+    "place": "Dubai International Airport, UAE",
+    "lat": 25.2515424,
+    "lon": 55.3666519,
+    "half_km": 4.0
+   },
+   "timeframe": {
+    "event_date": "2024-04-16",
+    "before": [
+     "2024-03-02",
+     "2024-04-15"
+    ],
+    "after": [
+     "2024-04-16",
+     "2024-05-07"
+    ],
+    "baseline_years_back": 1
+   },
+   "signatures": [
+    {
+     "id": "flood.new_water.s2",
+     "probe": "optical_change",
+     "measure": "new_water_frac",
+     "sensor": "s2",
+     "direction": "increase",
+     "min_effect": 0.005,
+     "rationale": "冠水域では NDWI が上がり、平常時は陸の画素が水になる。市街地を含む 8km 四方では冠水は面積の 1% 前後（数 km²）になるため、差の差で 0.5% を最小効果とする"
+    },
+    {
+     "id": "flood.vv_drop.s1",
+     "probe": "sar_change",
+     "measure": "vv_drop_frac",
+     "sensor": "s1",
+     "direction": "increase",
+     "min_effect": 0.02,
+     "rationale": "水面は鏡面反射で VV 後方散乱が 3dB 以上下がる。雲を透過する"
+    },
+    {
+     "id": "flood.precip.meteo",
+     "probe": "weather_anomaly",
+     "measure": "precip_z",
+     "sensor": "meteo",
+     "direction": "increase",
+     "min_effect": 2.0,
+     "rationale": "大規模冠水の直前には平年を大きく上回る降水がある"
+    }
+   ],
+   "alternatives": [
+    "季節変動",
+    "潮位",
+    "収穫",
+    "雲の影",
+    "恒久的な水域",
+    "別日の出来事"
+   ],
+   "prior_p": 0.5
+  },
+  "planner_model": "qwen-vl",
+  "sealed_at": "2026-11-14T07:38:08.425121Z",
+  "sha256": "936b32a622650d34ea92aceeed84823e5c50a739ceb06a5f26ebf2509665816e"
+ },
+ "plan_log": [
+  "flood.precip.meteo: 厳格化の提案（2.0 → 10.0、提案 1）は記録のみ。閾値は物理的な既定値に固定し、AI には変えさせない",
+  "flood.new_water.s2: flood.new_water.s2 と同じ観測のため重複として統合",
+  "flood.vv_drop.s1: flood.vv_drop.s1 と同じ観測のため重複として統合",
+  "flood.precip.meteo: flood.precip.meteo と同じ観測のため重複として統合"
+ ],
+ "results": [
+  {
+   "probe": "optical_change",
+   "measures": {
+    "new_water_frac": {
+     "value": 0.010527746079809384,
+     "lo": 0.006043987302460228,
+     "hi": 0.01564135127986717,
+     "detail": {
+      "control": 0.008561217493229552,
+      "control_available": true,
+      "target": 0.019088963573038936
+     }
+    }
+   },
+   "valid_ratio": 0.9999885559082031,
+   "scene_ids": [
+    "S2A_40RCN_20240318_0_L2A",
+    "S2B_40RCP_20240313_0_L2A",
+    "S2B_40RCN_20240313_0_L2A",
+    "S2B_40RCP_20240303_0_L2A",
+    "S2A_40RCP_20240417_0_L2A",
+    "S2B_40RCN_20240422_0_L2A",
+    "S2A_40RCP_20240427_0_L2A",
+    "S2A_40RCN_20240427_0_L2A",
+    "S2A_40RCN_20230403_0_L2A",
+    "S2A_40RCP_20230324_1_L2A",
+    "S2A_40RCP_20230403_1_L2A",
+    "S2A_40RCN_20230324_0_L2A",
+    "S2B_40RCP_20230418_0_L2A",
+    "S2B_40RCP_20230428_0_L2A",
+    "S2B_40RCN_20230428_0_L2A",
+    "S2A_40RCP_20230503_0_L2A"
+   ],
+   "code_sha256": "5bec5042a42c72f4fa72f4ff0cd401faa66ec13a653a41d512671f2356993e4b",
+   "sandbox_id": "a8960400-1ef6-4680-a24f-4d374b0fd501",
+   "artifacts": {
+    "after.png": "data/c39a9feb62/img/optical_change__after.png",
+    "before.png": "data/c39a9feb62/img/optical_change__before.png",
+    "change_new_water_frac.png": "data/c39a9feb62/img/optical_change__change_new_water_frac.png"
+   },
+   "error": null,
+   "repairs": 0,
+   "finished_at": "2026-11-14T07:39:18.189063Z"
+  },
+  {
+   "probe": "weather_anomaly",
+   "measures": {
+    "precip_z": {
+     "value": 20.76240819606719,
+     "lo": 15.06744811114456,
+     "hi": 33.37817101301222,
+     "detail": {
+      "climatology_mean_mm": 1.6333333333333333,
+      "history_years": 15,
+      "precip_mm": 92.3,
+      "source": "Open-Meteo ERA5",
+      "window": [
+       "2024-04-13",
+       "2024-04-17"
+      ]
+     }
+    }
+   },
+   "valid_ratio": 1.0,
+   "scene_ids": [
+    "open-meteo:era5:25.252,55.367"
+   ],
+   "code_sha256": "fb7c9d637c4b6f787bae4f156073ab227f51cc2017aa323470a9d5bfbe4c2e4c",
+   "sandbox_id": "46cf9772-5c32-4294-b843-dcf5f6876f44",
+   "artifacts": {},
+   "error": null,
+   "repairs": 0,
+   "finished_at": "2026-11-14T07:38:17.372754Z"
+  }
+ ],
+ "verdict": {
+  "label": "supported",
+  "posterior": 0.9057,
+  "prior": 0.5,
+  "entries": [
+   {
+    "signature_id": "flood.new_water.s2",
+    "sensor": "s2",
+    "outcome": "confirm",
+    "log_lr": 1.6739764335716716,
+    "reason": "new_water_frac=+0.011（区間の下限 0.006 ≥ 閾値 0.005）",
+    "measure": {
+     "value": 0.010527746079809384,
+     "lo": 0.006043987302460228,
+     "hi": 0.01564135127986717,
+     "detail": {
+      "control": 0.008561217493229552,
+      "control_available": true,
+      "target": 0.019088963573038936
+     }
+    }
+   },
+   {
+    "signature_id": "flood.vv_drop.s1",
+    "sensor": "s1",
+    "outcome": "null",
+    "log_lr": 0.0,
+    "reason": "プローブ失敗: 未実行",
+    "measure": null
+   },
+   {
+    "signature_id": "flood.precip.meteo",
+    "sensor": "meteo",
+    "outcome": "confirm",
+    "log_lr": 0.5877866649021191,
+    "reason": "precip_z=+20.762（区間の下限 15.067 ≥ 閾値 2.0）",
+    "measure": {
+     "value": 20.76240819606719,
+     "lo": 15.06744811114456,
+     "hi": 33.37817101301222,
+     "detail": {
+      "climatology_mean_mm": 1.6333333333333333,
+      "history_years": 15,
+      "precip_mm": 92.3,
+      "source": "Open-Meteo ERA5",
+      "window": [
+       "2024-04-13",
+       "2024-04-17"
+      ]
+     }
+    }
+   }
+  ],
+  "prereg_sha256": "936b32a622650d34ea92aceeed84823e5c50a739ceb06a5f26ebf2509665816e"
+ },
+ "explanation": {
+  "image_flags": [
+   "新規水",
+   "降水",
+   "冠水"
+  ],
+  "media_vs_observation": "報道は全て支持しており、ドバイ国際空港の冠水について言及しています。",
+  "signatures": [
+   {
+    "plain": "新規水の割合が0.011（閾値0.005以上）",
+    "signature_id": "flood.new_water.s2"
+   },
+   {
+    "plain": "降水量が20.762（閾値2.0以上）",
+    "signature_id": "flood.precip.meteo"
+   }
+  ],
+  "summary": "2024年4月16日の記録的豪雨により、ドバイ国際空港周辺が広範囲に冠水した。"
+ },
+ "scan": {
+  "answer": "2024年4月16日にアラブ首長国連邦（UAE）やオマーン、近隣のペルシャ湾諸国で広範囲にわたる鉄砲水が発生したことは報告されていますが、ドバイ国際空港周辺が冠水したという具体的な情報は提供されていません。したがって、ドバイ国際空港周辺が広範囲に冠水したという前提は、提示された資料では裏付けられていません。",
+  "sources": [
+   {
+    "found_by": "scan",
+    "published": "Wed, 17 Apr 2024 00:00:00 GMT",
+    "score": 0.5181957,
+    "snippet": "2024年4月16日、アラブ首長国連邦（UAE）、オマーン、および近隣のペルシャ湾諸国では、広範囲に及ぶ鉄砲水が発生した(1)(2)。",
+    "title": "室内空気質警報: ドバイの洪水",
+    "url": "https://www.iqair.com/jp/newsroom/indoor-air-quality-alert-dubai-flooding"
+   },
+   {
+    "found_by": "scan",
+    "published": "Mon, 10 Nov 2025 14:28:19 GMT",
+    "score": 0.008412978,
+    "snippet": "Al Fursan at Dubai Airshow Credit: Wikimedia Commons\n\nThe 2025 Dubai Airshow will kick off next Monday, on November 17, at Al Maktoum International Airport (DWC). Also known as Dubai World Central, this sprawling facility is just under 25 miles (40 km) away from the city of Dubai…",
+    "title": "2025 Dubai Airshow: Dates, Times, Aircraft Lineup & More!",
+    "url": "https://simpleflying.com/dubai-airshow-2025-preview"
+   },
+   {
+    "found_by": "scan",
+    "published": "Mon, 17 Nov 2025 00:00:00 GMT",
+    "score": 0.0075772414,
+    "snippet": "## Milestones\n\nAmong its biggest milestones are the record-breaking aircraft orders, the introduction of next-generation defence systems, and the increasing spotlight on sustainability, from electric aircraft concepts to sustainable aviation fuel initiatives. Photo shows the Euro…",
+    "title": "Dubai Air Show 2025 kicks off: What you need to know",
+    "url": "https://gulfnews.com/business/aviation/dubai-air-show-2025-kicks-off-what-you-need-to-know-1.500348691"
+   },
+   {
+    "found_by": "scan",
+    "published": "Mon, 13 Nov 2023 00:00:00 GMT",
+    "score": 0.0075772414,
+    "snippet": "What to expect from the Middle East's largest aerospace event /// First major orders announced with more – perhaps much bigger – likely to",
+    "title": "Get Ready for Dubai Air Show 2023 with Forecast International",
+    "url": "https://flightplan.forecastinternational.com/2023/11/13/get-ready-for-dubai-air-show-2023-with-forecast-international"
+   },
+   {
+    "found_by": "scan",
+    "published": "Mon, 09 Dec 2024 00:00:00 GMT",
+    "score": 0.0075187176,
+    "snippet": "One of the world's leading and most spectacular air displays takes place every two years in mid-November at Dubai World Center (DWC),",
+    "title": "Dubai Airshow 2025",
+    "url": "https://rove.me/to/dubai/dubai-airshow"
+   },
+   {
+    "found_by": "scan",
+    "published": "Tue, 21 Nov 2023 00:00:00 GMT",
+    "score": 0.007204769,
+    "snippet": "Show underscores aerospace is alive and healthy in the Middle East /// Boeing takes orders crown in strong week – new all-time backlog",
+    "title": "Dubai Air Show 2023 Recap",
+    "url": "https://flightplan.forecastinternational.com/2023/11/21/dubai-air-show-2023-recap"
+   },
+   {
+    "found_by": "scan",
+    "published": "Mon, 17 Nov 2025 00:00:00 GMT",
+    "score": 0.0066153924,
+    "snippet": "Plan ahead for a smooth Dubai Airshow visit with multiple transport options.",
+    "title": "Dubai Airshow 2025: Free shuttle buses, taxi ride discounts, parking tips and more",
+    "url": "https://gulfnews.com/uae/transport/dubai-airshow-2025-visitor-guide-free-shuttles-taxi-discounts-parking-tips-and-more-1.500348634"
+   },
+   {
+    "found_by": "scan",
+    "published": "Thu, 16 Jul 2026 00:00:00 GMT",
+    "score": 0.0058653383,
+    "snippet": "Earlier this year, UK's Gama Aviation opened a new business aviation centre in Sharjah, while planemaker Bombardier announced a maintenance, repair and overhaul (MRO) facility at Abu Dhabi's Al Bateen Airport, due to open later this year. DC Aviation Al-Futtaim is also expanding…",
+    "title": "Dubai MEBAA Show 2026: Private and Business Aviation Exhibition Returns in December to Dubai World Central",
+    "url": "https://gulfnews.com/business/aviation/dubais-biennial-private-aviation-show-to-return-in-december-as-sector-gathers-pace-1.500610175"
+   }
+  ]
+ },
+ "corroboration": {
+  "sources": [
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Wed, 17 Apr 2024 22:55:35 GMT",
+    "score": 0.7709825,
+    "snippet": "Share this: More in News National News | House Ukraine and Israel aid package gains President Biden’s support as Speaker Mike Johnson fights to keep his job National News | Senate dismisses two articles of impeachment against Homeland Security secretary, ending trial News | Lawye…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "A storm dumps record rain across UAE, floods Dubai's airport - Chicago Tribune",
+    "url": "https://www.chicagotribune.com/2024/04/17/a-storm-dumps-record-rain-across-the-desert-nation-of-uae-and-floods-dubais-airport/"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Wed, 17 Apr 2024 07:35:04 GMT",
+    "score": 0.7599387,
+    "snippet": "Heavy thunderstorms lashed the United Arab Emirates on Tuesday, April 16, 2024, dumping over a year and a half’s worth of rain on the desert city-state of Dubai in the span of hours as it flooded out portions of major highways and its international airport. Heavy thunderstorms la…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "Storm dumps heaviest rain ever recorded in desert nation of UAE, flooding roads and Dubai's airport - The Associated Press",
+    "url": "https://apnews.com/article/uae-historic-rain-storm-flooding-dubai-airport-disruption-3e838dbc169e52dcd6d11b64f79bdcb7"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Tue, 16 Apr 2024 15:57:00 GMT",
+    "score": 0.7558173,
+    "snippet": "“There is major flooding on access roads around Dubai leading to the airport.” Nearly 4 inches (100 mm) of rain fell over the course of just 12 hours on Tuesday, according to weather observations at the airport – around what Dubai measures in an entire year, according to United N…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "A year’s worth of rain plunges normally dry Dubai underwater - CNN",
+    "url": "https://www.cnn.com/2024/04/16/weather/dubai-rain-flooding-climate/index.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Wed, 17 Apr 2024 04:38:02 GMT",
+    "score": 0.74539834,
+    "snippet": "Storm dumps a year and a half's worth of water on parts of UAE, flooding roads and Dubai's airport DUBAI, United Arab Emirates — Heavy thunderstorms lashed the United Arab Emirates on Tuesday, dumping over a year and a half’s worth of rain on the desert city-state of Dubai in the…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Storm dumps a year and a half's worth of water on parts of UAE, flooding roads and Dubai's airport - The Washington Post",
+    "url": "https://www.washingtonpost.com/world/2024/04/16/uae-oman-rains-flooding-fatalities/e9766b78-fbca-11ee-87ac-20f7e67cbe29_story.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "official",
+    "published": "",
+    "score": 0.7236025,
+    "snippet": "Videos posted on social media showed aircraft ploughing through several inches of water that completely covered the airport's apron and taxiways.\n\nReuters/Zaheer Kunnath Flooded apron at Dubai International Airport (16 April 2024)\n\n\"We are currently experiencing significant disru…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "Dubai airport chaos as UAE and Oman reel from deadly storms",
+    "url": "https://www.bbc.com/news/world-middle-east-68831408"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Wed, 17 Apr 2024 22:54:00 GMT",
+    "score": 0.6489114,
+    "snippet": "The desert nation of UAE records its most rain ever, flooding highways and Dubai's airport DUBAI, United Arab Emirates — The United Arab Emirates attempted to dry out Wednesday from the heaviest rain the desert nation has ever recorded — a deluge that flooded out Dubai Internatio…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "A storm dumps record rain across the desert nation of UAE and floods Dubai's airport - The Washington Post",
+    "url": "https://www.washingtonpost.com/world/2024/04/17/uae-historic-rain-storm-flooding-dubai-airport-disruption/d185238e-fc8c-11ee-87ac-20f7e67cbe29_story.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Wed, 17 Apr 2024 06:32:58 GMT",
+    "score": 0.63906056,
+    "snippet": "DUBAI, United Arab Emirates — Heavy thunderstorms lashed the United Arab Emirates on Tuesday, dumping the heaviest rain ever recorded in the country in the span of hours as it flooded out portions of major highways and Dubai's international airport.  Weather Storm dumps heaviest…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "Storm dumps heaviest rain ever recorded in the United Arab Emirates - NPR",
+    "url": "https://www.npr.org/2024/04/17/1245236005/record-rain-united-arab-emirates"
+   },
+   {
+    "authoritative": false,
+    "found_by": "official",
+    "published": "",
+    "score": 0.62909126,
+    "snippet": "Schools across the UAE, a federation of seven sheikhdoms, largely shut ahead of the storm and government employees were largely working remotely if they could. Many workers stayed home as well, though some ventured out, with the unfortunate ones stalling out their vehicles in dee…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "Dubai flooding hobbles major airport's operations as \"historic weather event\" brings torrential rains to UAE - CBS News",
+    "url": "https://www.cbsnews.com/news/dubai-flooding-today-heavy-rain-snarls-traffic-uae-roads-and-airport"
+   },
+   {
+    "authoritative": false,
+    "found_by": "official",
+    "published": "",
+    "score": 0.55438,
+    "snippet": "Up to 259 mm (10.2 inches) of rain fell on the UAE between April 14 and 17, 2024, the most since records began 75 years ago, causing widespread flooding. In Oman, between April 14 and 16, some states received approximately 180 mm of rainfall, also causing significant flooding.\n D…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "Post Event Report: Gulf Floods",
+    "url": "https://www.guycarp.com/insights/2024/04/Gulf-Floods-April-2024.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "official",
+    "published": "",
+    "score": 0.52842695,
+    "snippet": "Image 1 of 6\n\n  Damaged vehicles after a portion of a roadway collapsed after heavy rainfall in the Dubai Sports City district of Dubai, United Arab Emirates, on Tuesday, April 16, 2024.  (Christopher Pike/Bloomberg)\n \n\n  Image 2 of 6\n\n  Two men use an inflatable bed to float abo…",
+    "stance": "support",
+    "stance_note": "記事は2024年4月16日にドバイ国際空港周辺が広範囲に冠水したという主張を支持しています。",
+    "title": "Deadly Persian Gulf storm swamps world's second-busiest airport | Fox Weather",
+    "url": "https://www.foxweather.com/weather-news/deadly-persian-gulf-storm-middle-east-2024"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Thu, 18 Apr 2024 08:23:54 GMT",
+    "score": 0.49243602,
+    "snippet": "Multiple injuries after Hezbollah strikes Israel – media Israelis reveal stance on retaliatory strike against Iran US responds to Palestine’s UN membership bid Biden claims ‘cannibals’ ate his uncle Saad Rafique calls for uplifting ban on X Chat Filters: WhatsApp’s innovative sol…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Dubai flooded by torrential rains (VIDEOS) - Global Village space",
+    "url": "https://www.globalvillagespace.com/dubai-flooded-by-torrential-rains-videos/"
+   },
+   {
+    "authoritative": false,
+    "found_by": "official",
+    "published": "",
+    "score": 0.47563577,
+    "snippet": "DUBAI — One of the world's busiest airports temporarily halted operations as the United Arab Emirates experienced its heaviest rainfall on record.\n\nThe downpour prompted flight cancellations and delays at Dubai's international airport, with travelers stranded for hours in both th…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "UAE hit with severe flooding as record rainfall disrupts Dubai flights",
+    "url": "https://www.cnbc.com/2024/04/17/uae-hit-with-severe-flooding-as-record-rainfall-disrupts-dubai-flights.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Wed, 17 Apr 2024 11:12:00 GMT",
+    "score": 0.43851465,
+    "snippet": "CNN values your feedback Chaos in Dubai as UAE records heaviest rainfall in 75 years Follow: Chaos ensued in the United Arab Emirates after the country witnessed the heaviest rainfall in 75 years, with some areas recording more than 250 mm of precipitation in fewer than 24 hours,…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Chaos in Dubai as UAE records heaviest rainfall in 75 years - CNN",
+    "url": "https://www.cnn.com/2024/04/17/weather/dubai-rain-flooding-climate-wednesday-intl/index.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Wed, 17 Apr 2024 15:13:00 GMT",
+    "score": 0.35734323,
+    "snippet": "Recommended Boeing 737 pushes through biblical flash floods at Dubai Airport North Carolina HS student charged after slapping teacher in profanity-filled classroom tantrum Matthew McConaughey on why he feels so connected to Marfa, Texas Jerry Seinfeld berated by anti-Israel prote…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Boeing 737 pushes through biblical flash floods at Dubai Airport - New York Post",
+    "url": "https://nypost.com/video/boeing-737-pushes-through-biblical-flash-floods-at-dubai-airport/"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Wed, 17 Apr 2024 18:35:21 GMT",
+    "score": 0.325735,
+    "snippet": "You can also get in touch in the following ways: WhatsApp: +44 7756 165803 Tweet: @BBC_HaveYourSay Upload pictures or video Please read our terms & conditions and privacy policy If you are reading this page and can't see the form you will need to visit the mobile version of the B…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Gulf flooding: Dubai airport chaos as UAE and Oman reel from deadly storms - Yahoo News Australia",
+    "url": "https://au.news.yahoo.com/fierce-storm-lashes-united-arab-211419281.html"
+   }
+  ],
+  "stance_counts": {
+   "refute": 0,
+   "support": 9,
+   "unrelated": 6
+  },
+  "window": [
+   "2024-04-09",
+   "2024-05-16"
+  ]
+ },
+ "geocode": {
+  "lat": 25.2515424,
+  "lon": 55.3666519,
+  "display_name": "مطار دبي الدولي, 14b شارع, الطوار 5, القصيص, دبي, الإمارات العربية المتحدة"
+ }
+}
