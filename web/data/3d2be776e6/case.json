@@ -1,0 +1,498 @@
+{
+ "run_id": "3d2be776e6",
+ "claim": "2024年4月16日の記録的豪雨で、エジプトのカイロ国際空港周辺が広範囲に冠水した",
+ "prereg": {
+  "hypothesis": {
+   "claim": "2024年4月16日の記録的豪雨で、エジプトのカイロ国際空港周辺が広範囲に冠水した",
+   "event_type": "flood",
+   "aoi": {
+    "place": "Cairo International Airport, Egypt",
+    "lat": 30.1140504,
+    "lon": 31.4245461,
+    "half_km": 4.0
+   },
+   "timeframe": {
+    "event_date": "2024-04-16",
+    "before": [
+     "2024-03-02",
+     "2024-04-15"
+    ],
+    "after": [
+     "2024-04-16",
+     "2024-05-07"
+    ],
+    "baseline_years_back": 1
+   },
+   "signatures": [
+    {
+     "id": "flood.new_water.s2",
+     "probe": "optical_change",
+     "measure": "new_water_frac",
+     "sensor": "s2",
+     "direction": "increase",
+     "min_effect": 0.005,
+     "rationale": "冠水域では NDWI が上がり、平常時は陸の画素が水になる。市街地を含む 8km 四方では冠水は面積の 1% 前後（数 km²）になるため、差の差で 0.5% を最小効果とする"
+    },
+    {
+     "id": "flood.vv_drop.s1",
+     "probe": "sar_change",
+     "measure": "vv_drop_frac",
+     "sensor": "s1",
+     "direction": "increase",
+     "min_effect": 0.02,
+     "rationale": "水面は鏡面反射で VV 後方散乱が 3dB 以上下がる。雲を透過する"
+    },
+    {
+     "id": "flood.precip.meteo",
+     "probe": "weather_anomaly",
+     "measure": "precip_z",
+     "sensor": "meteo",
+     "direction": "increase",
+     "min_effect": 2.0,
+     "rationale": "大規模冠水の直前には平年を大きく上回る降水がある"
+    }
+   ],
+   "alternatives": [
+    "季節変動",
+    "潮位",
+    "収穫",
+    "雲の影",
+    "恒久的な水域",
+    "別日の出来事"
+   ],
+   "prior_p": 0.5
+  },
+  "planner_model": "qwen-vl",
+  "sealed_at": "2026-11-14T07:41:14.831092Z",
+  "sha256": "9fe12ee00ef0768e2360b9b44890bcae52b844b2bd062bdfa301d5c615c535e3"
+ },
+ "plan_log": [
+  "signature_1: 閾値を緩める提案（1.0）は却下",
+  "flood.new_water.s2: flood.new_water.s2 と同じ観測のため重複として統合",
+  "flood.vv_drop.s1: flood.vv_drop.s1 と同じ観測のため重複として統合",
+  "flood.precip.meteo: flood.precip.meteo と同じ観測のため重複として統合"
+ ],
+ "results": [
+  {
+   "probe": "optical_change",
+   "measures": {
+    "new_water_frac": {
+     "value": -0.010028839111328125,
+     "lo": -0.0140838623046875,
+     "hi": -0.00635528564453125,
+     "detail": {
+      "control": 0.01006317138671875,
+      "control_available": true,
+      "target": 3.4332275390625e-05
+     }
+    }
+   },
+   "valid_ratio": 1.0,
+   "scene_ids": [
+    "S2B_36RUU_20240402_0_L2A",
+    "S2B_36RUU_20240412_0_L2A",
+    "S2A_36RUU_20240308_0_L2A",
+    "S2B_36RUU_20240323_0_L2A",
+    "S2A_36RUU_20240417_0_L2A",
+    "S2B_36RUU_20240422_0_L2A",
+    "S2A_36RUU_20240427_0_L2A",
+    "S2B_36RUU_20240502_0_L2A",
+    "S2A_36RUU_20230304_0_L2A",
+    "S2A_36RUU_20230403_0_L2A",
+    "S2A_36RUU_20230413_0_L2A",
+    "S2B_36RUU_20230309_0_L2A",
+    "S2B_36RUU_20230418_0_L2A",
+    "S2B_36RUU_20230428_0_L2A",
+    "S2A_36RUU_20230503_0_L2A"
+   ],
+   "code_sha256": "5bec5042a42c72f4fa72f4ff0cd401faa66ec13a653a41d512671f2356993e4b",
+   "sandbox_id": "1e3e5ff0-e22d-440c-832a-81310c8d84b4",
+   "artifacts": {
+    "after.png": "data/3d2be776e6/img/optical_change__after.png",
+    "before.png": "data/3d2be776e6/img/optical_change__before.png",
+    "change_new_water_frac.png": "data/3d2be776e6/img/optical_change__change_new_water_frac.png"
+   },
+   "error": null,
+   "repairs": 0,
+   "finished_at": "2026-11-14T07:42:18.632361Z"
+  },
+  {
+   "probe": "weather_anomaly",
+   "measures": {
+    "precip_z": {
+     "value": -0.34199625916535026,
+     "lo": -0.5498018108705603,
+     "hi": -0.24818946051525678,
+     "detail": {
+      "climatology_mean_mm": 0.7799999999999999,
+      "history_years": 15,
+      "precip_mm": 0,
+      "source": "Open-Meteo ERA5",
+      "window": [
+       "2024-04-13",
+       "2024-04-17"
+      ]
+     }
+    }
+   },
+   "valid_ratio": 1.0,
+   "scene_ids": [
+    "open-meteo:era5:30.114,31.425"
+   ],
+   "code_sha256": "fb7c9d637c4b6f787bae4f156073ab227f51cc2017aa323470a9d5bfbe4c2e4c",
+   "sandbox_id": "f999bd58-2bd7-4e8b-89f7-5e6c4b2fe62e",
+   "artifacts": {},
+   "error": null,
+   "repairs": 0,
+   "finished_at": "2026-11-14T07:41:23.503797Z"
+  }
+ ],
+ "verdict": {
+  "label": "contradicted",
+  "posterior": 0.0449,
+  "prior": 0.5,
+  "entries": [
+   {
+    "signature_id": "flood.new_water.s2",
+    "sensor": "s2",
+    "outcome": "refute",
+    "log_lr": -1.4469189829363258,
+    "reason": "new_water_frac=-0.010（区間の上限 -0.006 < 閾値 0.005）",
+    "measure": {
+     "value": -0.010028839111328125,
+     "lo": -0.0140838623046875,
+     "hi": -0.00635528564453125,
+     "detail": {
+      "control": 0.01006317138671875,
+      "control_available": true,
+      "target": 3.4332275390625e-05
+     }
+    }
+   },
+   {
+    "signature_id": "flood.vv_drop.s1",
+    "sensor": "s1",
+    "outcome": "null",
+    "log_lr": 0.0,
+    "reason": "プローブ失敗: 未実行",
+    "measure": null
+   },
+   {
+    "signature_id": "flood.precip.meteo",
+    "sensor": "meteo",
+    "outcome": "refute",
+    "log_lr": -1.6094379124341005,
+    "reason": "precip_z=-0.342（区間の上限 -0.248 < 閾値 2.0）",
+    "measure": {
+     "value": -0.34199625916535026,
+     "lo": -0.5498018108705603,
+     "hi": -0.24818946051525678,
+     "detail": {
+      "climatology_mean_mm": 0.7799999999999999,
+      "history_years": 15,
+      "precip_mm": 0,
+      "source": "Open-Meteo ERA5",
+      "window": [
+       "2024-04-13",
+       "2024-04-17"
+      ]
+     }
+    }
+   }
+  ],
+  "prereg_sha256": "9fe12ee00ef0768e2360b9b44890bcae52b844b2bd062bdfa301d5c615c535e3"
+ },
+ "explanation": {
+  "image_flags": [
+   "refute",
+   "null",
+   "refute"
+  ],
+  "media_vs_observation": "[refute] Dubai flooded by torrential rains (VIDEOS) - Global Village space\n[refute] Fact Check: Faked Photo Does NOT Show Total Eclipse With Swirling Corona -- AI Generated - Lead Stories\n[refute] Fact Check: Marines Attending Event At Mar-A-Lago DID Have Permission To Wear Uniforms -- It Was Charity Event - Lead Stories\n[refute] Fact Check: Trump Did NOT Tell Time Magazine 'He'd Force Every Pregnant Woman To Submit To Constant ... - Lead Stories\n[support] Chaos in Dubai as UAE records heaviest rainfall in 75 years - CNN\n[support] Boeing 737 pushes through biblical flash floods at Dubai Airport - New York Post\n[support] Dubai airport flooded and flights are hit as storm dumps record rain on UAE | AP News\n[support] Dubai flights canceled, schools and offices shut as rain pelts UAE just weeks after deadly floods - CNN\n[unrelated] Philippine News Agency\n[unrelated] North-West Syria: Situation Report (16 May 2024) [EN/AR]",
+  "signatures": [
+   {
+    "plain": "新規水の割合が-0.010であり、閾値0.005を下回っています。",
+    "signature_id": "flood.new_water.s2"
+   },
+   {
+    "plain": "降水強度が-0.342であり、閾値2.0を下回っています。",
+    "signature_id": "flood.precip.meteo"
+   }
+  ],
+  "summary": "2024年4月16日の記録的豪雨で、エジプトのカイロ国際空港周辺が広範囲に冠水したという主張は、衛星画像判読の結果により否定されました。"
+ },
+ "scan": {
+  "answer": "The sources do not mention a record rainstorm on 16 April 2024 or flooding around Cairo International Airport. Instead, they discuss various editions of the Cairo International Film Festival, including details about program dates, honorees, and the number of films shown.",
+  "sources": [
+   {
+    "found_by": "scan",
+    "published": "Thu, 16 Mar 2023 14:29:47 GMT",
+    "score": 0.0079997545,
+    "snippet": "But we always want to celebrate other festivals — some widely known, some less so — that don’t always get the attention of the Big Five but are nonetheless crucial for not only promoting the films of their own countries, but the work of great filmmakers around the world.\n\nAlso Re…",
+    "title": "20 Essential International Film Festivals That Yes, You Should Attend",
+    "url": "https://www.moviemaker.com/20-essential-international-film-festivals"
+   },
+   {
+    "found_by": "scan",
+    "published": "Thu, 12 Nov 2026 16:50:41 GMT",
+    "score": 0.0053225355,
+    "snippet": "## Welcome to Africanews\n\nPlease select your experience\n\n##### weather\n\n### Watch Live\n\n##### Breaking News\n\n## Just In\n\nshare_on_your_website\n\nCopy/paste the script below\n\nOTHER WIDGETS\n\n### November 13, 2026\n\n### US: New Congress members pose for traditional photo at Capitol\n\n#…",
+    "title": "47th edition of Cairo International Film Festival gets underway in shadow of war | Africanews",
+    "url": "https://www.africanews.com/2026/11/12/47th-edition-of-cairo-international-film-festival-gets-underway-in-shadow-of-war"
+   },
+   {
+    "found_by": "scan",
+    "published": "Wed, 14 Oct 2026 18:18:51 GMT",
+    "score": 0.004848533,
+    "snippet": "Hussein Fahmy, president of the festival, said the administration was seeking to present an edition capable of standing alongside major international film festivals, building on the Cairo International Film Festival’s status as an A-list event. He expressed his ambition for the f…",
+    "title": "Cairo International Film Festival unveils 47th edition with 145 films from 64 countries – Dailynewsegypt",
+    "url": "https://dailynewsegypt.com/2026/10/14/cairo-international-film-festival-unveils-47th-edition-with-145-films-from-64-countries"
+   },
+   {
+    "found_by": "scan",
+    "published": "Fri, 13 Nov 2026 07:00:00 GMT",
+    "score": 0.0043483814,
+    "snippet": "As the Cairo Intl. Film Festival celebrates 50 years since its founding, president Hussein Fahmy wants younger Egyptians to rediscover their",
+    "title": "‘I Play Rocky’ Opens 50th Anniversary Edition of Cairo Film Festival as Chief Hussein Fahmy Looks to the Future",
+    "url": "https://uk.news.yahoo.com/play-rocky-opens-50th-anniversary-082716177.html"
+   },
+   {
+    "found_by": "scan",
+    "published": "Thu, 12 Nov 2026 07:00:00 GMT",
+    "score": 0.004248079,
+    "snippet": "Egyptian actor Asser Yassin reacts as he receives the Faten Hamama Excellence Award during the opening ceremony of the 47th Cairo",
+    "title": "Licensable picture: 47th Cairo International Film Festival (CIFF)",
+    "url": "https://www.reutersconnect.com/item/47th-cairo-international-film-festival-ciff/dGFnOnJldXRlcnMuY29tLDIwMjY6bmV3c21sX1JDMlpMT0FNM0pDSg"
+   },
+   {
+    "found_by": "scan",
+    "published": "Tue, 10 Nov 2026 18:29:57 GMT",
+    "score": 0.004150081,
+    "snippet": "2 Min Read\n\nU.S. Central Command\n\n##### US Central Command announces the downing of two Iranian drones heading towards Bahrain and denies claims of targeting radar systems\n\nDoes moving the confrontation to the vicinity of naval bases in the…\n\n2 Min Read\n\n#### Trending\n\n\n\n### Isra…",
+    "title": "Cairo International Film Festival announces the final schedule for its 47th edition screenings",
+    "url": "https://www.voiceofemirates.com/en/lifestyle/2026/11/10/cairo-international-film-festival-announces-the-final-schedule-for-its-47th-edition-screenings"
+   },
+   {
+    "found_by": "scan",
+    "published": "Wed, 11 Nov 2026 07:00:00 GMT",
+    "score": 0.0040701376,
+    "snippet": "Veteran Egyptian actor Farouk Falawkas will be honoured with the Golden Pyramid Award at the opening ceremony of the 47th Cairo",
+    "title": "Cairo International Film Festival to Honour Actor Farouk Falawkas",
+    "url": "https://cairoscene.com/Film/Cairo-International-Film-Festival-to-Honour-Actor-Farouk-Falawkas"
+   },
+   {
+    "found_by": "scan",
+    "published": "Thu, 12 Nov 2026 07:00:00 GMT",
+    "score": 0.0038996208,
+    "snippet": "Egyptian actor Nermin El Feky poses on the red carpet during the opening ceremony of the 47th Cairo International Film Festival (CIFF) in",
+    "title": "Licensable picture: 47th Cairo International Film Festival (CIFF)",
+    "url": "https://www.reutersconnect.com/item/47th-cairo-international-film-festival-ciff/dGFnOnJldXRlcnMuY29tLDIwMjY6bmV3c21sX1JDMlpMT0FaQ1BVSA"
+   }
+  ]
+ },
+ "corroboration": {
+  "sources": [
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Thu, 18 Apr 2024 08:23:54 GMT",
+    "score": 0.22850065,
+    "snippet": "Multiple injuries after Hezbollah strikes Israel – media Israelis reveal stance on retaliatory strike against Iran US responds to Palestine’s UN membership bid Biden claims ‘cannibals’ ate his uncle Saad Rafique calls for uplifting ban on X Chat Filters: WhatsApp’s innovative sol…",
+    "stance": "refute",
+    "stance_note": "The article discusses Dubai, not Cairo, and does not mention any flooding in Cairo.",
+    "title": "Dubai flooded by torrential rains (VIDEOS) - Global Village space",
+    "url": "https://www.globalvillagespace.com/dubai-flooded-by-torrential-rains-videos/"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Thu, 11 Apr 2024 20:34:00 GMT",
+    "score": 0.19837458,
+    "snippet": "It's An AI-Generated Illustration Fact Check Fact Check: 'The Great Reset' Is NOT A Secret Plan Masterminded By Global Elites To Limit Freedoms And Push Radical Policies Fact Check Fact Check: The April 8, 2024, Total Solar Eclipse Will NOT Pass Over 8 North American Towns Named…",
+    "stance": "refute",
+    "stance_note": "The article is about a fake photo related to a total eclipse, not about Dubai's flooding.",
+    "title": "Fact Check: Faked Photo Does NOT Show Total Eclipse With Swirling Corona -- AI Generated - Lead Stories",
+    "url": "https://leadstories.com/hoax-alert/2024/04/fact-check-faked-photo-does-not-show-total-eclipse-with-swirling-corona-ai-generated.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Fri, 19 Apr 2024 23:45:54 GMT",
+    "score": 0.1665398,
+    "snippet": "Trolls Doctored An Old Christmas Photo Of The Couple Fact Check Fact Check: 'The Great Reset' Is NOT A Secret Plan Masterminded By Global Elites To Limit Freedoms And Push Radical Policies Fact Check Fact Check: Video Of Joe Rogan Talking About Extraterrestrial Life On Planet K2-…",
+    "stance": "refute",
+    "stance_note": "The article is about a fact check regarding Marines attending an event at Mar-a-Lago, not about Dubai's flooding.",
+    "title": "Fact Check: Marines Attending Event At Mar-A-Lago DID Have Permission To Wear Uniforms -- It Was Charity Event - Lead Stories",
+    "url": "https://leadstories.com/hoax-alert/2024/04/fact-check-marines-in-photo-attending-event-at-mar-a-lago-did-have-permission-to-wear-uniforms.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Thu, 09 May 2024 21:30:00 GMT",
+    "score": 0.15895613,
+    "snippet": "Most Read Fact Check: California's Fresno River Viaduct Did NOT Cost $11 Billion, Did NOT Take 9 Years Fact Check Fact Check: Scientific American Did NOT Warn That 5G Is Unsafe, An Op-Ed Guest Writer Did Fact Check Fact Check: German Politician NOT Convicted, Fined For Merely Pos…",
+    "stance": "refute",
+    "stance_note": "The article is about a fact check regarding a claim made by Trump, not about Dubai's flooding.",
+    "title": "Fact Check: Trump Did NOT Tell Time Magazine 'He'd Force Every Pregnant Woman To Submit To Constant ... - Lead Stories",
+    "url": "https://leadstories.com/hoax-alert/2024/05/fact-check-trump-did-not-tell-time-magazine-he-would-force-pregnant-women-to-submit-to-government-monitoring-if-reelected.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Wed, 17 Apr 2024 11:12:00 GMT",
+    "score": 0.1322902,
+    "snippet": "CNN values your feedback Chaos in Dubai as UAE records heaviest rainfall in 75 years Follow: Chaos ensued in the United Arab Emirates after the country witnessed the heaviest rainfall in 75 years, with some areas recording more than 250 mm of precipitation in fewer than 24 hours,…",
+    "stance": "support",
+    "stance_note": "The article supports the claim that Dubai experienced heavy rainfall and flooding.",
+    "title": "Chaos in Dubai as UAE records heaviest rainfall in 75 years - CNN",
+    "url": "https://www.cnn.com/2024/04/17/weather/dubai-rain-flooding-climate-wednesday-intl/index.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "refute",
+    "published": "Wed, 17 Apr 2024 15:13:00 GMT",
+    "score": 0.12907304,
+    "snippet": "Recommended Boeing 737 pushes through biblical flash floods at Dubai Airport North Carolina HS student charged after slapping teacher in profanity-filled classroom tantrum Matthew McConaughey on why he feels so connected to Marfa, Texas Jerry Seinfeld berated by anti-Israel prote…",
+    "stance": "support",
+    "stance_note": "The article supports the claim that Dubai experienced heavy rainfall and flooding.",
+    "title": "Boeing 737 pushes through biblical flash floods at Dubai Airport - New York Post",
+    "url": "https://nypost.com/video/boeing-737-pushes-through-biblical-flash-floods-at-dubai-airport/"
+   },
+   {
+    "authoritative": false,
+    "found_by": "official",
+    "published": "",
+    "score": 0.10837754,
+    "snippet": "“It remains an incredibly challenging time. In living memory, I don’t think anyone has ever seen conditions like it,” Griffiths told the state-owned talk radio station Dubai Eye. “We are in uncharted territory.”\n\nEgypt’s national carrier, EgyptAir, also temporarily suspended flig…",
+    "stance": "support",
+    "stance_note": "The article supports the claim that Dubai experienced heavy rainfall and flooding.",
+    "title": "Dubai airport flooded and flights are hit as storm dumps record rain on UAE | AP News",
+    "url": "https://apnews.com/article/uae-historic-rain-storm-flooding-dubai-airport-disruption-3e838dbc169e52dcd6d11b64f79bdcb7"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Thu, 02 May 2024 13:00:00 GMT",
+    "score": 0.021739595,
+    "snippet": "CNN values your feedback Dubai flights canceled, schools and offices shut as rain pelts UAE just weeks after deadly floods Follow: Emirates was forced to cancel and delay several flights in and out of Dubai, the second-busiest international airport in the world, while people and…",
+    "stance": "support",
+    "stance_note": "The article supports the claim that Dubai experienced heavy rainfall and flooding.",
+    "title": "Dubai flights canceled, schools and offices shut as rain pelts UAE just weeks after deadly floods - CNN",
+    "url": "https://www.cnn.com/2024/05/02/middleeast/uae-rain-storm-dubai-flights-disruption-climate-intl/index.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "official",
+    "published": "",
+    "score": 0.020527788,
+    "snippet": "Log In\n\nLog In\n\nForgot Account?\n\n## Philippine News Agency's Post\n\n  \n\n, the day after the United Arab Emirates was pounded by its heaviest rainfall in 75 years.\n\nInternational news wire agencies reported 100 millimeters (nearly 4 inches) of rain over 12 hours on Tuesday (April 1…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Philippine News Agency",
+    "url": "https://www.facebook.com/pnagovph/posts/look-standstill-in-mohammed-bin-zayed-road-dubai-on-wednesday-morning-april-17-2/827358942773895"
+   },
+   {
+    "authoritative": true,
+    "found_by": "official",
+    "published": "",
+    "score": 0.017442485,
+    "snippet": "## Disclaimer\n\nUN Office for the Coordination of Humanitarian Affairs To learn more about OCHA's activities, please visit \n\n## Report details\n\nPrimary country\n   Syrian Arab Republic\n\nSource\n   UN Office for the Coordination of Humanitarian Affairs\n\nDisaster\n   Türkiye/Syria: Ear…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "North-West Syria: Situation Report (16 May 2024) [EN/AR]",
+    "url": "https://reliefweb.int/report/syrian-arab-republic/north-west-syria-situation-report-16-may-2024-enar"
+   },
+   {
+    "authoritative": true,
+    "found_by": "official",
+    "published": "",
+    "score": 0.013795364,
+    "snippet": "Highlights\n\nOver 87 per cent of all school buildings in the Gaza Strip have been damaged or destroyed, as per Education Cluster estimates. All schools have been closed for 625,000 students for six months. Every university in Gaza has been destroyed. [...] ## OCHA Services\n\nRelate…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "UNICEF State of Palestine Humanitarian Situation Report No. 23 (Escalation): 04-17 April 2024 - occupied Palestinian territory | ReliefWeb",
+    "url": "https://reliefweb.int/report/occupied-palestinian-territory/unicef-state-palestine-humanitarian-situation-report-no-23-escalation-04-17-april-2024"
+   },
+   {
+    "authoritative": true,
+    "found_by": "official",
+    "published": "",
+    "score": 0.01001357,
+    "snippet": "## Attachments\n\n   Image 2: Preview of Afghanistan Flooding Situation Report #1 (12 May 2024) FINAL (1).pdfDownload Report(PDF | 922.45 KB)\n\n_(Information in the report is based on available data as of reporting period)_\n\nKey messages: [...] The full extent of the damage is not y…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Afghanistan Flooding Situation Report No. 1 (12 May 2024)",
+    "url": "https://reliefweb.int/report/afghanistan/afghanistan-flooding-situation-report-no-1-12-may-2024"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Mon, 29 Apr 2024 07:20:00 GMT",
+    "score": 0.0074030147,
+    "snippet": "CNN values your feedback Dozens killed after dam bursts in Kenya as weeks of heavy rain devastate region Follow: At least 35 people have been killed and dozens of others are missing after a dam burst in southern Kenya, sweeping away homes and vehicles as the country grapples with…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Dozens killed after dam bursts in Kenya as weeks of heavy rain devastate region - CNN",
+    "url": "https://www.cnn.com/2024/04/29/africa/kenya-floods-mai-mahiu-intl-hnk/index.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Fri, 26 Apr 2024 16:14:00 GMT",
+    "score": 0.0072608665,
+    "snippet": "CNN values your feedback Kenya floods leave 70 dead as truck is swept away in deluge Follow: At least 70 people have died from countrywide flooding in Kenya, a government spokesperson said Friday as authorities ordered more evacuations of people from at-risk areas due to ongoing…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Kenya floods leave 70 dead as truck is swept away in deluge - CNN",
+    "url": "https://www.cnn.com/2024/04/26/africa/kenya-flooding-intl/index.html"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Tue, 30 Apr 2024 13:39:00 GMT",
+    "score": 0.0070390454,
+    "snippet": "Africa In photos: Flash floods kill over 100 people in Kenya By Washington Post staff | Apr 30, 2024 Floods have killed 169 people in Kenya with 91 still missing, Kenyaâs Ministry of Interior said on Tuesday, the day after a torrent of water swept away scores of people near the…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "In photos: Flash floods kill dozens in Kenya - The Washington Post",
+    "url": "https://www.washingtonpost.com/world/interactive/2024/photos-flash-floods-kill-dozens-kenya/"
+   },
+   {
+    "authoritative": false,
+    "found_by": "support",
+    "published": "Sun, 28 Apr 2024 19:04:41 GMT",
+    "score": 0.00685048,
+    "snippet": "News Ejisu by-election: Akufo-Addo jabs independent candidate; refutes allegations of attempts to rig elections Sports Black Stars fitness coach Romeo Ricky Roy is dead - Reports Business New Kumasi Airport receives A320 aircraft Entertainment IGP spotted at Kyekyeku’s 1957 movie…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Kenya floods leave 76 dead as truck is swept away in deluge - GhanaWeb",
+    "url": "https://www.ghanaweb.com/GhanaHomePage/africa/Kenya-floods-leave-76-dead-as-truck-is-swept-away-in-deluge-1928279"
+   },
+   {
+    "authoritative": true,
+    "found_by": "support",
+    "published": "Wed, 01 May 2024 21:39:31 GMT",
+    "score": 0.0055119344,
+    "snippet": "Image of the Day for May 2, 2024 Image of the Day Water Floods View more Images of the Day: References & Resources You might also be interested in    (view all) Subscribe Floods Heavy rains have flooded the Shebelle River and affected hundreds of thousands of people in Somalia an…",
+    "stance": "unrelated",
+    "stance_note": "",
+    "title": "Destructive Floods Afflict Tanzania - nasa.gov",
+    "url": "https://earthobservatory.nasa.gov/images/152754/destructive-floods-afflict-tanzania"
+   }
+  ],
+  "stance_counts": {
+   "refute": 4,
+   "support": 4,
+   "unrelated": 9
+  },
+  "window": [
+   "2024-04-09",
+   "2024-05-16"
+  ]
+ },
+ "geocode": {
+  "lat": 30.1140504,
+  "lon": 31.4245461,
+  "display_name": "مطار القاهرة الدولى (CAI), طريق 121, قباء, القاهرة, 11595, مصر"
+ }
+}

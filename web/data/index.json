@@ -1,0 +1,18 @@
+{
+ "runs": [
+  {
+   "run_id": "c39a9feb62",
+   "claim": "2024年4月16日の記録的豪雨で、ドバイ国際空港周辺が広範囲に冠水した",
+   "label": "supported",
+   "posterior": 0.9057,
+   "event_date": "2024-04-16"
+  },
+  {
+   "run_id": "3d2be776e6",
+   "claim": "2024年4月16日の記録的豪雨で、エジプトのカイロ国際空港周辺が広範囲に冠水した",
+   "label": "contradicted",
+   "posterior": 0.0449,
+   "event_date": "2024-04-16"
+  }
+ ]
+}
