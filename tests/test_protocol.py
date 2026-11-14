@@ -130,7 +130,7 @@ def test_true_flood_without_sar_is_still_supported():
 def test_place_swapped_claim_is_contradicted():
     """場所をすり替えた誤情報: その場所では雨も冠水も観測されない。"""
     v = ledger.aggregate(make_prereg(), [
-        result("optical_change", new_water_frac=(0.001, -0.004, 0.006)),
+        result("optical_change", new_water_frac=(0.0005, -0.002, 0.003)),
         result("weather_anomaly", precip_z=(0.2, -0.5, 0.9)),
     ])
     assert v.label == "contradicted" and v.posterior < 0.15
@@ -139,7 +139,7 @@ def test_place_swapped_claim_is_contradicted():
 def test_rain_without_visible_water_is_not_overclaimed():
     """雨は降ったが冠水は見えない → 確信度を上げすぎない。"""
     v = ledger.aggregate(make_prereg(), [
-        result("optical_change", new_water_frac=(0.001, -0.004, 0.006)),
+        result("optical_change", new_water_frac=(0.0005, -0.002, 0.003)),
         result("weather_anomaly", precip_z=(9.0, 6.0, 12.0)),
     ])
     assert v.label == "inconclusive"

@@ -32,6 +32,10 @@ NOSANA_BASE_URL = os.environ.get("NOSANA_BASE_URL", "").rstrip("/")
 NOSANA_MODEL = os.environ.get("NOSANA_MODEL", "qwen-vl")
 NOSANA_API_KEY = os.environ.get("NOSANA_API_KEY", "none")
 AGENTFIELD_SERVER = os.environ.get("AGENTFIELD_SERVER", "http://localhost:8080")
+# nosana（既定）/ openrouter: Nosana が落ちたときのデモ用退避先。同じ Qwen-VL 系を OpenRouter で使う
+LLM_BACKEND = os.environ.get("WITNESS_LLM", "nosana").lower()
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "qwen/qwen2.5-vl-72b-instruct")
 CODEAF_VIA_NOSANA = os.environ.get("CODEAF_VIA_NOSANA", "0") == "1"
 # 1 なら既存プローブで測れないシグネチャを CodeAF に新規作成させる
 WITNESS_SYNTH = os.environ.get("WITNESS_SYNTH", "0") == "1"

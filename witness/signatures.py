@@ -12,8 +12,9 @@ from .schemas import EventType, Signature
 # (id, probe, measure, sensor, direction, min_effect, rationale)
 _TABLE: dict[str, list[tuple]] = {
     "flood": [
-        ("flood.new_water.s2", "optical_change", "new_water_frac", "s2", "increase", 0.02,
-         "冠水域では NDWI が上がり、平常時は陸の画素が水になる"),
+        ("flood.new_water.s2", "optical_change", "new_water_frac", "s2", "increase", 0.005,
+         "冠水域では NDWI が上がり、平常時は陸の画素が水になる。市街地を含む 8km 四方では"
+         "冠水は面積の 1% 前後（数 km²）になるため、差の差で 0.5% を最小効果とする"),
         ("flood.vv_drop.s1", "sar_change", "vv_drop_frac", "s1", "increase", 0.02,
          "水面は鏡面反射で VV 後方散乱が 3dB 以上下がる。雲を透過する"),
         ("flood.precip.meteo", "weather_anomaly", "precip_z", "meteo", "increase", 2.0,

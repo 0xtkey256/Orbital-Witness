@@ -1,7 +1,7 @@
 """LLM（Planner / Skeptic）の提案を、事前登録できる仮説に安全に取り込む。
 
 ガード
-- 既定シグネチャの閾値は「厳しくする」方向にしか変えられない（緩めて通す、を防ぐ）
+- 既定シグネチャの閾値は変えられない（AI に閾値を決めさせない。提案は記録して監査できるようにする）
 - 既定シグネチャは削除できない
 - 新しいシグネチャは追加できる。今あるプローブで測れなければ「新規プローブ候補」になる
 - 日付は未来・遠すぎる過去を拒否する
@@ -62,25 +62,49 @@ def parse_event_date(s: str, today: Optional[date] = None) -> date:
     return d
 
 
-def merge_signatures(base: list[Signature], proposals: list[SignatureProposal]) -> tuple[list[Signature], list[str]]:
-    """戻り値: (合成後のシグネチャ, 却下・調整の記録)"""
-    by_id = {s.id: s for s in base}
-    order = [s.id for s in base]
+# プローブ → 独立性グループ。LLM が sensor を "satellite" などと書いても台帳の独立性が崩れないようにする
+PROBE_SENSOR = {"optical_change": "s2", "sar_change": "s1", "weather_anomaly": "meteo"}
+
+
+def merge_signatures(base: list[Signature], proposals: list[SignatureProposal],
+                     allow_new: bool = True) -> tuple[list[Signature], list[str]]:
+    """戻り値: (合成後のシグネチャ, 却下・調整の記録)
+
+    - 同じ (probe, measure) は 1 つの証拠。新しい id で出し直されても重複として数えない
+    - 既定シグネチャの閾値は変えない（厳格化の提案は記録のみ、緩める提案と逆向きの提案は却下）。
+      LLM は毎回上限まで厳しくする傾向があり、それを許すと実質的に AI が結論を決めてしまうため
+    - allow_new=False（Skeptic）のとき、新しい量は補助観測として記録するだけで判定に入れない
+    """
+    sigs = list(base)
     log: list[str] = []
+
+    def find(p):
+        for k, s in enumerate(sigs):
+            if s.id == p.id or (s.probe == p.probe and s.measure == p.measure):
+                return k, s
+        return None, None
+
     for p in proposals:
-        if p.id in by_id:
-            cur = by_id[p.id]
+        k, cur = find(p)
+        if cur is not None:
+            if p.direction != cur.direction:
+                log.append(f"{p.id}: {cur.id} と逆向きの提案は却下（代替仮説として記録）")
+                continue
             if p.min_effect > cur.min_effect:
-                by_id[p.id] = cur.model_copy(update={"min_effect": p.min_effect,
-                                                     "rationale": f"{cur.rationale}／厳格化: {p.rationale}".strip("／")})
-                log.append(f"{p.id}: 閾値を {cur.min_effect} → {p.min_effect} に厳格化")
+                log.append(f"{cur.id}: 厳格化の提案（{cur.min_effect} → {p.min_effect}、提案 {p.id}）は記録のみ。"
+                           "閾値は物理的な既定値に固定し、AI には変えさせない")
             elif p.min_effect < cur.min_effect:
                 log.append(f"{p.id}: 閾値を緩める提案（{p.min_effect}）は却下")
+            else:
+                log.append(f"{p.id}: {cur.id} と同じ観測のため重複として統合")
             continue
-        by_id[p.id] = Signature(**p.model_dump())
-        order.append(p.id)
+        if not allow_new:
+            log.append(f"{p.id}: 補助観測として記録（{p.probe}.{p.measure}、判定には不算入）")
+            continue
+        sigs.append(Signature(**{**p.model_dump(exclude={"sensor"}),
+                                 "sensor": PROBE_SENSOR.get(p.probe, p.sensor)}))
         log.append(f"{p.id}: 追加（{p.probe}.{p.measure} {p.direction} ≥ {p.min_effect}）")
-    return [by_id[i] for i in order], log
+    return sigs, log
 
 
 def build_hypothesis(claim: str, draft: PlanDraft, lat: float, lon: float,
@@ -96,5 +120,5 @@ def build_hypothesis(claim: str, draft: PlanDraft, lat: float, lon: float,
 
 
 def apply_review(hyp: Hypothesis, review: SkepticReview) -> tuple[Hypothesis, list[str]]:
-    sigs, log = merge_signatures(hyp.signatures, review.signatures)
+    sigs, log = merge_signatures(hyp.signatures, review.signatures, allow_new=False)
     return hyp.model_copy(update={"signatures": sigs, "alternatives": hyp.alternatives + review.alternatives}), log

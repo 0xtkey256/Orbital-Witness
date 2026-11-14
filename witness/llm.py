@@ -10,6 +10,10 @@ from . import config
 
 
 def nosana_ai_config(temperature: float = 0.2, max_tokens: int = 1500) -> AIConfig:
+    if config.LLM_BACKEND == "openrouter":  # 退避先（WITNESS_LLM=openrouter）
+        return AIConfig(model=f"openai/{config.OPENROUTER_MODEL}", api_base="https://openrouter.ai/api/v1",
+                        api_key=config.require("OPENROUTER_API_KEY", config.OPENROUTER_API_KEY),
+                        temperature=temperature, max_tokens=max_tokens, retry_attempts=2, timeout=180)
     return AIConfig(
         model=f"openai/{config.NOSANA_MODEL}",
         # 未設定でもノードは起動できるようにし、初回の推論で接続エラーとして気付けるようにする

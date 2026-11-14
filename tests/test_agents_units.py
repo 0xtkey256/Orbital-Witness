@@ -22,11 +22,11 @@ def prop(id_, min_effect, probe="optical_change", measure="new_water_frac", sens
 # ---------- 計画のガード ----------
 def test_llm_can_tighten_but_not_loosen():
     sigs, log = merge_signatures(default_signatures("flood"),
-                                 [prop("flood.new_water.s2", 0.05), prop("flood.vv_drop.s1", 0.0001)])
+                                 [prop("flood.new_water.s2", 0.01), prop("flood.vv_drop.s1", 0.0001)])
     by = {s.id: s for s in sigs}
-    assert by["flood.new_water.s2"].min_effect == 0.05
+    assert by["flood.new_water.s2"].min_effect == 0.005   # 閾値は既定値に固定
     assert by["flood.vv_drop.s1"].min_effect == 0.02
-    assert any("厳格化" in x for x in log) and any("却下" in x for x in log)
+    assert any("記録のみ" in x for x in log) and any("却下" in x for x in log)
 
 
 def test_llm_cannot_drop_default_signatures_but_can_add():
@@ -218,3 +218,20 @@ def test_tavily_quota_error_trips_breaker(monkeypatch):
     assert scout.scan("x")["skipped"]
     assert scout.scan("x")["skipped"].startswith("Tavily が使えない")
     assert len(calls) == 1  # 2 回目は呼ばずに飛ばす
+
+
+def test_same_measure_is_one_piece_of_evidence():
+    sigs, log = merge_signatures(default_signatures("flood"),
+                                 [prop("new_water_frac_increase", 0.1), prop("tidal_check", 0.005)])
+    nw = [s for s in sigs if s.measure == "new_water_frac"]
+    assert len(nw) == 1                     # 重複して数えない
+    assert nw[0].min_effect == 0.005        # AI は閾値を動かせない
+
+
+def test_opposite_direction_rejected_and_skeptic_cannot_add_evidence():
+    p = prop("cloud_shadow", 0.01); p.direction = "decrease"
+    sigs, log = merge_signatures(default_signatures("flood"), [p])
+    assert all(s.direction == "increase" for s in sigs if s.measure == "new_water_frac")
+    hyp, _ = build_hypothesis("c", PlanDraft(place="Dubai", event_type="flood", event_date="2024-04-16"), 25.2, 55.3, TODAY)
+    hyp2, log2 = apply_review(hyp, SkepticReview(alternatives=["灌漑"], signatures=[prop("irrigation", 0.01, measure="built_gain_frac")]))
+    assert len(hyp2.signatures) == len(hyp.signatures) and any("補助観測" in x for x in log2)

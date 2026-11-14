@@ -31,7 +31,7 @@ SCENARIOS = {
              "sar_change": ("vv_drop_frac", 0.10, 0.07, 0.13),
              "weather_anomaly": ("precip_z", 9.0, 6.0, 12.0)},
     # 場所すり替え: 雨も冠水も無い
-    "swapped": {"optical_change": ("new_water_frac", 0.001, -0.004, 0.006),
+    "swapped": {"optical_change": ("new_water_frac", 0.0005, -0.002, 0.003),
                 "sar_change": ("vv_drop_frac", 0.0, -0.003, 0.004),
                 "weather_anomaly": ("precip_z", 0.2, -0.5, 0.9)},
 }
@@ -76,7 +76,7 @@ async def fake_ai(*args, system=None, user=None, schema=None, **kw):
     if schema is SkepticReview:
         return SkepticReview(alternatives=["恒久的な水域を新たな水面と誤認"], signatures=[
             SignatureProposal(id="flood.new_water.s2", probe="optical_change", measure="new_water_frac",
-                              sensor="s2", direction="increase", min_effect=0.03, rationale="厳しめに"),
+                              sensor="s2", direction="increase", min_effect=0.012, rationale="厳しめに"),
             SignatureProposal(id="flood.vv_drop.s1", probe="sar_change", measure="vv_drop_frac",
                               sensor="s1", direction="increase", min_effect=0.0, rationale="緩める試み")])
     if schema is StanceList:
@@ -121,7 +121,7 @@ def test_verify_claim_end_to_end(direct, monkeypatch, tmp_path, scenario, label)
     sealed = Preregistration.model_validate(case["prereg"])
     prereg.verify(sealed)  # 保存された事前登録が改変されていない
     sigs = {s["id"]: s for s in case["prereg"]["hypothesis"]["signatures"]}
-    assert sigs["flood.new_water.s2"]["min_effect"] == 0.03   # Skeptic の厳格化は採用
+    assert sigs["flood.new_water.s2"]["min_effect"] == 0.005  # 厳格化の提案は記録のみ
     assert sigs["flood.vv_drop.s1"]["min_effect"] == 0.02     # 緩める提案は却下
     assert any("却下" in x for x in case["plan_log"])
     assert case["prereg"]["hypothesis"]["alternatives"] == ["恒久的な水域を新たな水面と誤認"]
