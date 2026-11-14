@@ -329,3 +329,24 @@ select { background: var(--panel-solid); color: var(--text); border: 1px solid v
 }
 .hc-runs { margin: 14px 0 0; }
 .hc-runs button { font-size: 0.78rem; }
+
+/* ---------- motion layer (js/motion.js) ---------- */
+.fx-stars { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.hero { position: relative; }
+.fx-orbit { position: absolute; top: 0; left: 0; z-index: 0; pointer-events: none; }
+.hero > *:not(.fx-orbit) { position: relative; z-index: 1; }
+.fx-progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 100; transform-origin: 0 50%; transform: scaleX(0);
+  background: linear-gradient(90deg, var(--c-agentfield), var(--c-tavily), var(--c-daytona), var(--c-codeaf), var(--c-nosana)); }
+.hero h1 { background: linear-gradient(100deg, #e6edf7 20%, #8fe3ff 40%, #e6edf7 60%); background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 6s ease-in-out infinite; }
+@keyframes shimmer { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+.hc-claim.typing::after { content: "▍"; color: var(--cyan); animation: blink 0.8s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.compare::after { content: ""; position: absolute; left: 0; right: 0; top: -20%; height: 18%; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(61,220,151,0.18), rgba(61,220,151,0.45) 50%, transparent 52%);
+  animation: scan 4.5s linear infinite; mix-blend-mode: screen; }
+@keyframes scan { to { top: 105%; } }
+.hero-card { animation: floaty 7s ease-in-out infinite; }
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .fx-stars, .fx-orbit { display: none; } .hero h1 { color: var(--text); background: none; } }
+.stars { display: none; }
